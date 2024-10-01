@@ -1,0 +1,8 @@
+{
+  "urls": {
+    "api_base_url": "https://localhost:[some port number]" // ocelot in docker
+  },
+  "tinyMCE": {
+    "key": "[your tiny mce api key]"
+  }
+}

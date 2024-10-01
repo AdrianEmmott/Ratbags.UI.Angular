@@ -1,0 +1,12 @@
+/* You can add global styles to this file, and also import other style files */
+@mixin form-control-margin {
+  margin-bottom: 1rem;
+}
+
+.form-control {
+  @include form-control-margin;
+}
+
+label {
+  margin-bottom: 0.5rem; // Adjust the value as needed
+}

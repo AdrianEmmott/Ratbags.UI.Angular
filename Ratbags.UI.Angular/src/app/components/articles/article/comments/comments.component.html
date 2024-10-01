@@ -1,0 +1,31 @@
+<section class="mt-5" id="comments" *ngIf="article">
+  <!--  -->
+  <p>
+    <fa-icon [icon]="faComments" class="me-2 fa-regular"></fa-icon>
+    <strong class="mb-2">{{ article.comments.length }} {{ article.comments.length === 1 ? 'comment' : 'comments' }}</strong>
+    <a data-bs-toggle="collapse" href="#collapseExample" role="button"
+       aria-expanded="true" aria-controls="collapseExample" (click)="toggleCollapse()">
+      <fa-icon [icon]="isCollapsed ? faPlusSquare : faMinusSquare"></fa-icon>
+    </a>
+  </p>
+
+  <!-- comments -->
+  <div class="collapse show" id="collapseExample">
+    <section *ngFor="let comment of article.comments">
+      <div class="comment mt-4 mb-3">
+        <div class="d-flex justify-content-between align-items-center">
+          <p><strong>some name</strong></p>
+          <small class="text-muted">{{ comment.published | date : 'dd/MM/yyyy HH:mm:ss' }}</small>
+        </div>
+        <p>{{ comment.content }}</p>
+        <div class="comment-footer">
+          <button class="btn btn-sm btn-outline-primary">Reply</button>
+        </div>
+        <hr />
+      </div>
+    </section>
+
+    <!-- add comment -->
+    <app-comment [article]="article" (getComments)="getCommentsbyArticleId()"></app-comment>
+  </div>
+</section>

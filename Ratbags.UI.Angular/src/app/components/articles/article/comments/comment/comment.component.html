@@ -1,0 +1,19 @@
+<section class="mt-5" *ngIf="form">
+  <form [formGroup]="form">
+    <p>
+      <fa-icon [icon]="faCommentAlt" class="me-2"></fa-icon>
+      <strong>Add a comment</strong>
+    </p>
+    <div>
+      <label for="commentName" class="col-sm-4">Name</label>
+      <input type="text" class="form-control col-sm-1" id="commentName" formControlName="name" />
+      <label for="commenterName" class="col-sm-4">Your comment</label>
+      <textarea class="form-control col-sm-4" formControlName="comment"></textarea>
+    </div>
+    <div class="comment-footer">
+      <button class="btn btn-sm btn-outline-primary" id="addComment" (click)="addComment()">
+        Add comment
+      </button>
+    </div>
+  </form>
+</section>
