@@ -39,6 +39,7 @@ export class CommentsComponent implements OnInit {
     }
   }
 
+  // keep this
   //addComment() {
   //  if (this.article && this.form) {
   //    let comment: Comment = {

@@ -106,6 +106,7 @@ export class ArticleComponent implements OnInit {
   }
   createCancel() {
     this.creating = false;
+    this.router.navigate(['/articles']);
   }
   create() {
     if (this.article) {

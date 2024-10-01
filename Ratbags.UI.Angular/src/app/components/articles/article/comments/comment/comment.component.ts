@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { switchMap, of } from 'rxjs';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, RequiredValidator, Validators } from '@angular/forms';
 
 import { Article } from '../../../../../interfaces/article';
 import { Comment } from '../../../../../interfaces/comment';
@@ -17,6 +17,7 @@ import { faComment, faCommentAlt, faComments, faMinusSquare, faPlusSquare } from
 export class CommentComponent implements OnInit {
   @Input() article: Article | undefined;
   @Output() getComments = new EventEmitter<void>();
+
   form?: FormGroup;
   
   // icons
@@ -33,8 +34,8 @@ export class CommentComponent implements OnInit {
     if (this.article && this.article.id.length > 0) {
       this.form = this.formBuilder.group({
         articleId: [this.article?.id],
-        name: [''],
-        comment: ['']
+        name: ['', [Validators.required]],
+        comment: ['', [Validators.required]]
       });
     }
   }
