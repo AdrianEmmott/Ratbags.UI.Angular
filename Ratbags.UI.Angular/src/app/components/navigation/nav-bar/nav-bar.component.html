@@ -1,0 +1,97 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-body-tertiary">
+  <div class="container-fluid">
+    <a class="navbar-brand " href="/">ratbags ></a>
+    <button class="navbar-toggler" type="button"
+            data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+      <!-- nav -->
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link"
+             routerLinkActive="active"
+             ariaCurrentWhenActive="page"
+             [routerLink]="['/articles']">
+            What's going on
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link"
+             routerLinkActive="active"
+             ariaCurrentWhenActive="page"
+             [routerLink]="['/login']">
+            About
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link"
+             routerLinkActive="active"
+             ariaCurrentWhenActive="page"
+             [routerLink]="['/home']">
+            Contact
+          </a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Dropdown
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" [routerLink]="['/articles']">Action</a></li>
+            <li><a class="dropdown-item" [routerLink]="['/home']">Another action</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" [routerLink]="['/login']">Something else here</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+        </li>
+      </ul>
+
+      <!-- search -->
+      <form class="d-flex align-content-center input-group w-auto">
+        <input class="form-control m-0" type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-sm btn-outline-success m-0" type="submit">Search</button>
+      </form>
+
+      <!-- login -->
+      <div class="nav-item ms-md-3 text-end mt-3 mt-sm-0 mt-lg-0" ngbDropdown id="navbar-dropdown-login"
+           *ngIf="!(accountService.tokenValidLocally$ | async) && !onLoginPage">
+        <a class="nav-link" tabindex="0" ngbDropdownToggle role="button"> Login </a>
+        <div ngbDropdownMenu class="dropdown-menu dropdown-menu-end pt-3" aria-labelledby="login-dropdown" id="login-dropdown">
+          <div class="container-fluid">
+            <app-login class="w-100" [showRegister]="false" [showForgotPassword]="false"></app-login>
+          </div>
+          <div class="dropdown-divider"></div>
+          <button type="button" ngbDropdownItem>New around here? Sign up</button>
+          <button type="button" ngbDropdownItem>Forgot password?</button>
+        </div>
+      </div>
+
+      <!-- logout -->
+      <div class="nav-item ms-md-3" *ngIf="(accountService.tokenValidLocally$ | async) && !onLoginPage">
+        <a [routerLink]="['/']"
+           class="nav-link"
+           tabindex="5"
+           id="l6"
+           (click)="logout()">
+          Logout
+        </a>
+      </div>
+
+      <!-- set theme -->
+      <div class="pt-0 ps-2 ms-0 ms-sm-2 text-end text-sm-start" id="theme">
+        <fa-icon [icon]="faSun" *ngIf="(themesService.showLightThemeButton$ | async)"
+                 (click)="themesService.setTheme('light')">
+        </fa-icon>
+        <fa-icon [icon]="faMoon"
+                 *ngIf="!(themesService.showLightThemeButton$ | async)"
+                 (click)="themesService.setTheme('dark')">
+        </fa-icon>
+      </div>
+
+    </div>
+  </div>
+</nav>

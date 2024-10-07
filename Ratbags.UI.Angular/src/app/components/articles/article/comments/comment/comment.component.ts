@@ -1,13 +1,14 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { switchMap, of } from 'rxjs';
-import { FormBuilder, FormGroup, RequiredValidator, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 
 import { Article } from '../../../../../interfaces/article';
 import { Comment } from '../../../../../interfaces/comment';
-import { ComemntsService } from '../../../../../services/comments-service';
+import { ComemntsService } from '../../../../../services/comments.service';
 
 // icons
-import { faComment, faCommentAlt, faComments, faMinusSquare, faPlusSquare } from '@fortawesome/free-regular-svg-icons';
+import { faCommentAlt } from '@fortawesome/free-regular-svg-icons';
+
 
 @Component({
   selector: 'app-comment',
@@ -16,6 +17,7 @@ import { faComment, faCommentAlt, faComments, faMinusSquare, faPlusSquare } from
 })
 export class CommentComponent implements OnInit {
   @Input() article: Article | undefined;
+  @Input() isLoggedIn: boolean = false;
   @Output() getComments = new EventEmitter<void>();
 
   form?: FormGroup;
@@ -23,7 +25,8 @@ export class CommentComponent implements OnInit {
   // icons
   faCommentAlt = faCommentAlt;
 
-  constructor(private formBuilder: FormBuilder,
+  constructor(public router: Router,
+              private formBuilder: FormBuilder,
               private commentsService: ComemntsService) { }
 
   ngOnInit() {
@@ -50,13 +53,15 @@ export class CommentComponent implements OnInit {
       };
 
       this.commentsService.create(comment)
-        .subscribe(
-          result => {
-            this.getComments.emit();
-          },
-          error => {
+        .subscribe({
+          next:
+            result => {
+              this.getComments.emit();
+            },
+          error: error => {
             console.error('error adding comment:', error);
           }
+        }
         );
     }
   }

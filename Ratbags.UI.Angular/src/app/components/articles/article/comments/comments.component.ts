@@ -2,9 +2,12 @@ import { Component, Input, OnInit } from '@angular/core';
 
 import { Article } from '../../../../interfaces/article';
 import { Comment } from '../../../../interfaces/comment';
-import { ComemntsService } from '../../../../services/comments-service';
+import { ComemntsService } from '../../../../services/comments.service';
 
 import { faComments, faMinusSquare, faPlusSquare } from '@fortawesome/free-regular-svg-icons';
+
+import { NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-comments',
@@ -13,6 +16,7 @@ import { faComments, faMinusSquare, faPlusSquare } from '@fortawesome/free-regul
 })
 export class CommentsComponent implements OnInit {
   @Input() article: Article | undefined;
+  @Input() isLoggedIn: boolean = false;
 
   isCollapsed: boolean = false;
 
@@ -21,58 +25,23 @@ export class CommentsComponent implements OnInit {
   faPlusSquare = faPlusSquare;
   faMinusSquare = faMinusSquare;
 
-  constructor(private commentsService: ComemntsService) { }
+  constructor(public router: Router,
+    private commentsService: ComemntsService) { }
 
   ngOnInit() {
-
   }
 
-  // only used when adding comments
+  // only used when adding comments - otherwise articles api gets them
   getCommentsbyArticleId() {
     if (this.article) {
       this.commentsService.getCommentsByArticleId(this.article?.id)
-        .subscribe((results) => {
-          if (this.article) {
-            this.article.comments = results as Comment[];
+        .subscribe({
+          next: (results) => {
+            if (this.article) {
+              this.article.comments = results as Comment[];
+            }
           }
         });
     }
-  }
-
-  // keep this
-  //addComment() {
-  //  if (this.article && this.form) {
-  //    let comment: Comment = {
-  //      articleId: this.article.id,
-  //      content: this.form.controls['comment'].value,
-  //      published: new Date().toISOString(),
-  //      userId: "b9fb9865-34a9-4981-8d6a-0f4c1ee4be37" // just for now...
-  //    };
-
-  //    this.commentsService.addComment(comment)
-  //      .pipe(
-  //        switchMap(() => {
-  //          if (this.article) {
-  //            return this.commentsService.getCommentsByArticleId(this.article.id);
-  //          } else {
-  //            return of([] as Comment[]);
-  //          }
-  //        })
-  //      )
-  //      .subscribe(
-  //        result => {
-  //          if (this.article) {
-  //            this.article.comments = <Comment[]>result;
-  //          }
-  //        },
-  //        error => {
-  //          console.error('error adding comment or retrieving comments:', error);
-  //        }
-  //      );
-  //  }
-  //}
-
-  toggleCollapse() {
-    this.isCollapsed = !this.isCollapsed;
   }
 }

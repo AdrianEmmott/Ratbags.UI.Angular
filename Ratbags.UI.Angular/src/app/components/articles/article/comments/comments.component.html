@@ -1,16 +1,19 @@
 <section class="mt-5" id="comments" *ngIf="article">
-  <!--  -->
+  <!-- comment count -->
   <p>
-    <fa-icon [icon]="faComments" class="me-2 fa-regular"></fa-icon>
-    <strong class="mb-2">{{ article.comments.length }} {{ article.comments.length === 1 ? 'comment' : 'comments' }}</strong>
-    <a data-bs-toggle="collapse" href="#collapseExample" role="button"
-       aria-expanded="true" aria-controls="collapseExample" (click)="toggleCollapse()">
-      <fa-icon [icon]="isCollapsed ? faPlusSquare : faMinusSquare"></fa-icon>
+    <a data-bs-toggle="collapse"
+       role="button"
+       class="link-opacity-75 link-opacity-100-hover hover text-decoration-none link-underline-opacity-0-hover"
+       aria-controls="collapseExample"
+       [attr.aria-expanded]="!isCollapsed"
+       (click)="collapse.toggle()">
+       {{ article.comments.length }}
+      <fa-icon [icon]="faComments" class="me-2 fa-regular"></fa-icon>
     </a>
   </p>
 
   <!-- comments -->
-  <div class="collapse show" id="collapseExample">
+  <div #collapse="ngbCollapse" [(ngbCollapse)]="isCollapsed">
     <section *ngFor="let comment of article.comments">
       <div class="comment mt-4 mb-3">
         <div class="d-flex justify-content-between align-items-center">
@@ -19,13 +22,14 @@
         </div>
         <p>{{ comment.content }}</p>
         <div class="comment-footer">
-          <button class="btn btn-sm btn-outline-primary">Reply</button>
+          <button class="btn btn-sm btn-outline-primary" *ngIf="isLoggedIn">Reply</button>
+          <a [routerLink]="['/login']" [queryParams]="{ returnUrl: router.url }" *ngIf="!isLoggedIn">Login to reply</a>
         </div>
         <hr />
       </div>
     </section>
 
     <!-- add comment -->
-    <app-comment [article]="article" (getComments)="getCommentsbyArticleId()"></app-comment>
+    <app-comment [article]="article" [isLoggedIn]="isLoggedIn" (getComments)="getCommentsbyArticleId()"></app-comment>
   </div>
 </section>

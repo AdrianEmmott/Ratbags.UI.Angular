@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 import { Article } from '../../interfaces/article';
-import { ArticlesService } from '../../services/articles-service';
+import { ArticlesService } from '../../services/articles.service';
 
 @Component({
   selector: 'app-articles',
@@ -9,23 +9,11 @@ import { ArticlesService } from '../../services/articles-service';
   styleUrl: './articles.component.scss'
 })
 export class ArticlesComponent implements OnInit {
-  articles: Article[] = [];
+  articles$ = this.articlesService.getArticles();
 
-  constructor(private articlesService: ArticlesService) { }
+  constructor(public articlesService: ArticlesService) { }
 
   ngOnInit() {
-    this.getArticles();
-  }
-
-  getArticles() {
-    this.articlesService.getArticles()
-      .subscribe(
-        results => {
-          this.articles = results;
-        },
-        error => {
-          console.log('error', error);
-        }
-      );
+    this.articles$.subscribe(data => console.log('Articles:', data));
   }
 }

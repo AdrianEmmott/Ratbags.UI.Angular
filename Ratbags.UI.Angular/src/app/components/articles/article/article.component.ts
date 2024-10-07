@@ -1,22 +1,21 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { of } from 'rxjs';
-import { switchMap } from 'rxjs/internal/operators/switchMap';
+import { Observable } from 'rxjs';
 
 import { EditorComponent } from '@tinymce/tinymce-angular';
 
 import { AppConfigService } from '../../../services/app-config.service';
+import { AccountService } from '../../../services/account.service';
 
 import { Article } from '../../../interfaces/article';
-import { ArticlesService } from '../../../services/articles-service';
+import { ArticlesService } from '../../../services/articles.service';
 
-import { Comment } from '../../../interfaces/comment';
-import { ComemntsService } from '../../../services/comments-service';
+import { ComemntsService } from '../../../services/comments.service';
 
 // icons
 import { faCoffee } from '@fortawesome/free-solid-svg-icons';
-import { HttpContext, HttpResponse } from '@angular/common/http';
+
 
 @Component({
   selector: 'app-article',
@@ -26,8 +25,17 @@ import { HttpContext, HttpResponse } from '@angular/common/http';
 export class ArticleComponent implements OnInit {
   @ViewChild('contentEditor') contentEditor?: EditorComponent; // tinymce
 
+  isLoggedIn$ = this.accountService.validateToken$;
+  isLoggedIn: boolean = false;
+
   readonly editorInitialisation: EditorComponent["init"] = {
-    plugins: ["help"],
+    plugins: ["help", "advcode"],
+    //skin: "oxide", // regular
+    //content_css: "default",
+    //skin: "oxide-dark", // force dark
+    //content_css: "dark"
+    skin: (window.matchMedia("(prefers-color-scheme: dark)").matches ? "oxide-dark" : ""), // match user prefs
+    content_css: (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "")
   };
 
   article: Article | undefined;
@@ -42,21 +50,40 @@ export class ArticleComponent implements OnInit {
   // icons
   faCoffee = faCoffee;
 
-  constructor(private formBuilder: FormBuilder,
+  constructor(private route: ActivatedRoute,
+    public router: Router,
+    private formBuilder: FormBuilder,
     private appConfigService: AppConfigService,
+    public accountService: AccountService,
     private articlesService: ArticlesService,
-    private commentsService: ComemntsService,
-    private route: ActivatedRoute,
-    private router: Router) { }
+    private commentsService: ComemntsService) {
+  }
 
   ngOnInit() {
-    this.route.paramMap.subscribe(params => {
-      const id = params.get('id');
-      if (id) {
-        this.getArticle(id);
-      }
-      else {
-        this.setupCreate();
+    //this.isLoggedIn$.subscribe(status => console.log('IsLoggedIn:', status));
+
+    this.accountService.validateToken();
+
+    //this.accountService
+    //  .validateToken()
+    //  .subscribe({
+    //    next: result => {
+    //      this.isLoggedIn = result;
+    //    },
+    //    error: error => {
+    //      console.log(error);
+    //    }
+    //  });
+
+    this.route.paramMap.subscribe({
+      next: params => {
+        const id = params.get('id');
+        if (id) {
+          this.getArticle(id);
+        }
+        else {
+          this.setupCreate();
+        }
       }
     });
   }
@@ -70,21 +97,23 @@ export class ArticleComponent implements OnInit {
 
   getArticle(id: string) {
     this.articlesService.getArticle(id)
-      .subscribe((result: Article) => {
-        this.article = result;
+      .subscribe({
+        next: (result: Article) => {
+          this.article = result;
 
-        this.article = {
-          id: result.id,
-          title: result.title,
-          content: result.content,
-          created: result.created,
-          updated: result.updated,
-          publishDate: result.publishDate,
-          comments: result.comments,
-          userId: result.userId
+          this.article = {
+            id: result.id,
+            title: result.title,
+            content: result.content,
+            created: result.created,
+            updated: result.updated,
+            publishDate: result.publishDate,
+            comments: result.comments,
+            userId: result.userId
+          }
+
+          this.originalContent = this.article.content;
         }
-
-        this.originalContent = this.article.content;
       });
   }
 
@@ -114,23 +143,25 @@ export class ArticleComponent implements OnInit {
       this.article.content = this.form?.controls['content'].value;
 
       this.articlesService.create(<Article>this.article)
-        .subscribe((response) => {
-          const id = response.body;
-          const locationHeader = response.headers.get('Location');
+        .subscribe({
+          next: (response) => {
+            const id = response.body;
+            const locationHeader = response.headers.get('Location');
 
-          if (locationHeader) {
-            console.log('navigating from response headers');
+            if (locationHeader) {
+              console.log('navigating from response headers');
 
-            const relativeUrl = new URL(locationHeader).pathname;
-            this.router.navigateByUrl(relativeUrl);
-          } else if (id) {
-            console.log('navigating the old fashioned way');
+              const relativeUrl = new URL(locationHeader).pathname;
+              this.router.navigateByUrl(relativeUrl);
+            } else if (id) {
+              console.log('navigating the old fashioned way');
 
-            this.router.navigate(['/articles', id]);
+              this.router.navigate(['/articles', id]);
+            }
+
+            this.editing = false;
+            this.creating = false;
           }
-          
-          this.editing = false;
-          this.creating = false;
         });
     }
   }
@@ -154,8 +185,10 @@ export class ArticleComponent implements OnInit {
       this.article.content = this.form?.controls['content'].value;
 
       this.articlesService.update(<Article>this.article)
-        .subscribe(result => {
-          this.editing = false;
+        .subscribe({
+          next: result => {
+            this.editing = false;
+          }
         });
     }
   }

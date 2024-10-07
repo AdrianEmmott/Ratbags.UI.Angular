@@ -3,9 +3,12 @@ import { RouterModule, Routes } from '@angular/router';
 import { ArticleComponent } from './components/articles/article/article.component';
 import { ArticlesComponent } from './components/articles/articles.component';
 import { HomeComponent } from './components/home/home.component';
+import { LoginWrapperComponent } from './components/account/login-wrapper/login-wrapper.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent }, // Default route
+  { path: 'home', component: HomeComponent },
+  { path: 'login', component: LoginWrapperComponent },
   { path: 'articles', component: ArticlesComponent },
   { path: 'articles/new', component: ArticleComponent },
   { path: 'articles/:id', component: ArticleComponent }

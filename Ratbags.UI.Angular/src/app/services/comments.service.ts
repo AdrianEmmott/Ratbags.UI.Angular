@@ -3,11 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { AppConfigService } from './app-config.service';
-
-import { Article } from '../interfaces/article';
 import { Comment } from '../interfaces/comment';
-
-
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +15,7 @@ export class ComemntsService {
     private appConfigService: AppConfigService) { }
 
   create(comment: Comment): Observable<string> {
-    return this.http.post<string>(`${this.appConfigService.apiBaseUrl}`, comment);
+    return this.http.post<string>(`${this.apiUrl}`, comment);
   }
 
   getCommentsByArticleId(id: string): Observable<Comment[]> {

@@ -1,12 +1,25 @@
-/* You can add global styles to this file, and also import other style files */
+/* Importing Bootstrap SCSS file. */
+@import 'bootstrap/scss/bootstrap';
+
 @mixin form-control-margin {
   margin-bottom: 1rem;
 }
 
-.form-control {
-  @include form-control-margin;
+a {
+  text-decoration: none;
 }
 
 label {
-  margin-bottom: 0.5rem; // Adjust the value as needed
+  margin-bottom: 0.5rem;
+}
+
+.form-control {
+  // could be a bad idea
+  @include form-control-margin;
+}
+
+#navbar-dropdown-login .dropdown-menu {
+  // ugh - for the navbar
+  width: 300px;
+  max-width: 400px;
 }

@@ -17,15 +17,16 @@ export class AppConfigService {
   loadAppConfig(): Promise<void> {
     return new Promise((resolve, reject) => {
       this.http.get<ConfigJSON>('/assets/config.json')
-        .subscribe(
-          data => {
+        .subscribe({
+          next: data => {
             this.appConfig = data;
-            resolve();  // Call resolve() when the config is loaded
+            resolve();  // keep your promises
           },
-          error => {
+          error: error => {
             console.error('Could not load config file', error);
-            reject(error);  // Call reject() on error
+            reject(error);
           }
+        }
         );
     });
   }

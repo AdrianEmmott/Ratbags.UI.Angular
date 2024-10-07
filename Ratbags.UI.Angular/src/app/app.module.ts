@@ -1,20 +1,32 @@
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { AppRoutingModule } from './app-routing.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { EditorModule } from '@tinymce/tinymce-angular';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { BrowserModule } from '@angular/platform-browser';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { AppRoutingModule } from './app-routing.module';
 
+// interceptors
+import { jwtInterceptor } from './interceptors/jwt.interceptor';
+
+// editor and icons
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { EditorModule } from '@tinymce/tinymce-angular';
+
+// components
+import { AccountComponent } from './components/account/account/account.component';
+import { LoginWrapperComponent } from './components/account/login-wrapper/login-wrapper.component';
+import { LoginComponent } from './components/account/login/login.component';
 import { AppComponent } from './components/app.component';
 import { ArticleComponent } from './components/articles/article/article.component';
+import { CommentComponent } from './components/articles/article/comments/comment/comment.component';
+import { CommentsComponent } from './components/articles/article/comments/comments.component';
 import { ArticlesComponent } from './components/articles/articles.component';
 import { HomeComponent } from './components/home/home.component';
-import { CommentsComponent } from './components/articles/article/comments/comments.component';
-import { CommentComponent } from './components/articles/article/comments/comment/comment.component';
+import { NavBarComponent } from './components/navigation/nav-bar/nav-bar.component';
 
+// services
 import { AppConfigService } from './services/app-config.service';
-
+import { SearchComponent } from './components/search/search.component';
 
 @NgModule({
   declarations: [
@@ -24,6 +36,11 @@ import { AppConfigService } from './services/app-config.service';
     ArticleComponent,
     CommentsComponent,
     CommentComponent,
+    AccountComponent,
+    LoginComponent,
+    NavBarComponent,
+    LoginWrapperComponent,
+    SearchComponent,
   ],
   imports: [
     BrowserModule,
@@ -31,10 +48,13 @@ import { AppConfigService } from './services/app-config.service';
     AppRoutingModule,
     FormsModule,
     ReactiveFormsModule,
-    FontAwesomeModule
+    FontAwesomeModule,
+    NgbModule
   ],
   providers: [
-    provideHttpClient(),
+    provideHttpClient(
+      withInterceptors([jwtInterceptor])
+    ),
     {
       provide: APP_INITIALIZER,
       multi: true,

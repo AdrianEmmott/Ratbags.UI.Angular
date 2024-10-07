@@ -1,4 +1,4 @@
-<div class="container mt-5" *ngIf="article">
+<div class="mt-5" *ngIf="article">
   <section *ngIf="!editing && !creating">
     <article>
       <header class="mb-4">
@@ -17,17 +17,29 @@
       </section>
 
       <!-- comments -->
-      <app-comments [article]="article"></app-comments>
+      <app-comments [article]="article" [isLoggedIn]="(isLoggedIn$ | async) ?? false"></app-comments>
 
       <footer class="mt-5">
         <h5>About the Author</h5>
         <p>author</p>
       </footer>
 
+      <!-- editor button -->
       <section class="mt-3 mb-5">
-        <button class="btn btn-sm btn-outline-success me-2" (click)="edit()">edit</button>
-        <a class="btn btn-sm btn-outline-success me-2" [routerLink]="['/articles']">back to articles</a>
+        <a class="btn btn-sm btn-outline-success me-2"
+           [routerLink]="['/login']"
+           [queryParams]="{ returnUrl: router.url }"
+           *ngIf="!(isLoggedIn$ | async) ?? false">
+          Login to edit article
+        </a>
+        <button class="btn btn-sm btn-outline-success me-2"
+                (click)="edit()"
+                *ngIf="(isLoggedIn$ | async) ?? false">
+          edit
+        </button>
       </section>
+
+      <a class="me-2" [routerLink]="['/articles']">back to articles</a>
     </article>
   </section>
 
@@ -48,7 +60,12 @@
       </editor>
 
       <section class="mt-3 mb-3">
-        <button class="btn btn-sm btn-success me-2" (click)="editing? update() : create()">{{editing? 'update' : 'create'}}</button>
+        <button class="btn btn-sm btn-success me-2" (click)="editing? update() : create()" *ngIf="isLoggedIn">{{editing? 'update' : 'create'}}</button>
+        <a class="btn btn-sm btn-outline-success me-2" [routerLink]="['/login']"
+           [queryParams]="{ returnUrl: router.url }"
+           *ngIf="!(isLoggedIn$ | async) ?? false">
+          Login to {{editing? 'update' : 'create'}} article
+        </a>
         <button class="btn btn-sm btn-warning me-2" (click)="editing? updateCancel() : createCancel()">cancel</button>
       </section>
     </form>

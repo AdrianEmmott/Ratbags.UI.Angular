@@ -11,9 +11,14 @@
       <textarea class="form-control col-sm-4" placeholder="Your comment" formControlName="comment"></textarea>
     </div>
     <div class="comment-footer">
-      <button class="btn btn-sm btn-outline-primary" id="addComment" (click)="addComment()" [disabled]="!form.valid">
+      <button class="btn btn-sm btn-outline-primary"
+              id="addComment"
+              (click)="addComment()"
+              [disabled]="!form.valid"
+              *ngIf="isLoggedIn">
         Add comment
       </button>
+      <a [routerLink]="['/login']" [queryParams]="{ returnUrl: router.url }" *ngIf="!isLoggedIn">Login to comment</a>
     </div>
   </form>
 </section>
