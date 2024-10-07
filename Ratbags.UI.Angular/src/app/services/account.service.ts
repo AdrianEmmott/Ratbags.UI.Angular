@@ -12,7 +12,7 @@ import { AppConfigService } from './app-config.service';
 export class AccountService {
   private apiUrl = `${this.appConfigService.apiBaseUrl}/api/account`;
 
-  // nosey sods and a blabber-mouths
+  // nosey sods and blabber-mouths
   private tokenValidLocallySubject = new BehaviorSubject<boolean>(this.validateTokenLocally());
   tokenValidLocally$: Observable<boolean> = this.tokenValidLocallySubject.asObservable();
 
@@ -36,6 +36,7 @@ export class AccountService {
     );
   }
 
+  // TODO logout on server
   logout() {
     this.removeToken();
     this.updateTokenValidity();
@@ -53,12 +54,10 @@ export class AccountService {
     }
 
     const decodedToken: any = jwtDecode(token);
-    console.log('decodedToken', decodedToken);
     const currentTime = Math.floor(new Date().getTime() / 1000);
 
     // expired?
     const validToken = decodedToken.exp > currentTime;
-    console.log('validToken', validToken);
 
     if (!validToken) {
       this.removeToken();

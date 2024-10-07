@@ -1,21 +1,17 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable } from 'rxjs';
 
 import { EditorComponent } from '@tinymce/tinymce-angular';
 
-import { AppConfigService } from '../../../services/app-config.service';
-import { AccountService } from '../../../services/account.service';
-
 import { Article } from '../../../interfaces/article';
+import { AccountService } from '../../../services/account.service';
+import { AppConfigService } from '../../../services/app-config.service';
 import { ArticlesService } from '../../../services/articles.service';
-
 import { ComemntsService } from '../../../services/comments.service';
 
 // icons
 import { faCoffee } from '@fortawesome/free-solid-svg-icons';
-
 
 @Component({
   selector: 'app-article',
@@ -28,6 +24,7 @@ export class ArticleComponent implements OnInit {
   isLoggedIn$ = this.accountService.validateToken$;
   isLoggedIn: boolean = false;
 
+  // TODO work in the current theme
   readonly editorInitialisation: EditorComponent["init"] = {
     plugins: ["help", "advcode"],
     //skin: "oxide", // regular
@@ -60,20 +57,7 @@ export class ArticleComponent implements OnInit {
   }
 
   ngOnInit() {
-    //this.isLoggedIn$.subscribe(status => console.log('IsLoggedIn:', status));
-
-    this.accountService.validateToken();
-
-    //this.accountService
-    //  .validateToken()
-    //  .subscribe({
-    //    next: result => {
-    //      this.isLoggedIn = result;
-    //    },
-    //    error: error => {
-    //      console.log(error);
-    //    }
-    //  });
+    this.accountService.validateToken(); // check against server once
 
     this.route.paramMap.subscribe({
       next: params => {
@@ -117,6 +101,8 @@ export class ArticleComponent implements OnInit {
       });
   }
 
+
+  // TODO this all needs breaking out
   setupCreate() {
     this.article = {
       id: '',
