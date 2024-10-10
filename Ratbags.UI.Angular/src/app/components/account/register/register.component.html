@@ -1,0 +1,104 @@
+<div class="row justify-content-center mt-5">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">
+        <h3>{{ registerSuccess ? 'Success!' : 'Register' }}</h3>
+      </div>
+      <div class="card-body" *ngIf="!registerSuccess">
+        <form class="w-100"
+              [formGroup]="form"
+              (ngSubmit)="onSubmit()">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="text"
+                   class="form-control login-input"
+                   id="email"
+                   formControlName="email"
+                   placeholder="Enter email"
+                   [ngClass]="{ 'is-invalid': f['email'].errors && f['email'].touched}" />
+            <div *ngIf="f['email'].errors && f['email'].touched" class=" invalid-feedback">
+              <div *ngIf="f['email'].errors['required']">Email is required</div>
+              <div *ngIf="f['email'].errors['email']">Please enter a valid email - e.g. <i>joe&#64;bloggs.com</i></div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input [type]="showPassword ? 'text' : 'password'"
+                   autocomplete="new-password"
+                   class="form-control login-input"
+                   id="password"
+                   formControlName="password"
+                   placeholder="Enter password"
+                   [ngClass]="{ 'is-invalid': f['password'].errors && f['password'].touched }" />
+            <div *ngIf="f['password'].errors && f['password'].touched" class="invalid-feedback">
+              <div *ngIf="f['password'].errors['required']">Password is required</div>
+              <div *ngIf="f['password'].errors['minlength']">
+                Password must be at least {{ f['password'].errors['minlength'].requiredLength }} characters long.
+              </div>
+              <div *ngIf="f['password'].errors['pattern']">
+                <p>Passwords should contain at least:</p>
+                <ul>
+                  <li>1 or more upper case characters</li>
+                  <li>1 or more lower case characters</li>
+                  <li>1 or more numbers</li>
+                  <li>1 or more special characters - eg &#64; $ %</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="password">Confirm password</label>
+            <div class="input-group">
+              <input [type]="showPassword ? 'text' : 'password'"
+                     autocomplete="new-password"
+                     class="form-control login-input"
+                     id="confirm-password"
+                     formControlName="confirmPassword"
+                     placeholder="Confirm password"
+                     [ngClass]="{ 'is-invalid':
+                          (f['confirmPassword'].errors && f['confirmPassword'].touched) ||
+                          (form.errors?.['mismatch'] && f['confirmPassword'].touched) }" />
+
+              <button type="button" class="btn btn-outline-secondary"
+                      (click)="togglePasswordVisibility('confirm-password')">
+                <fa-icon [icon]="faEye" class="me-2 fa-regular" *ngIf="showPassword"></fa-icon>
+                <fa-icon [icon]="faEyeSlash" class="me-2 fa-regular" *ngIf="!showPassword"></fa-icon>
+              </button>
+
+              <div *ngIf="f['confirmPassword'].errors && f['confirmPassword'].touched" class="invalid-feedback">
+                <div *ngIf="f['confirmPassword'].errors['required']">Password is required</div>
+                <div *ngIf="f['confirmPassword'].errors['minlength']">
+                  Password must be at least {{ f['confirmPassword'].errors['minlength'].requiredLength }} characters long.
+                </div>
+              </div>
+
+              <div class="invalid-feedback"
+                   *ngIf="form.errors?.['mismatch']">
+                <div>Passwords do not match</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-sm-12 d-flex align-items-center">
+            <div class="col-sm-6 text-start pt-0 pb-2">
+              Already have an account? <a [routerLink]="['/login']">Login</a>
+            </div>
+            <div class="col-sm-6 text-end">
+              <button type="submit" class="btn btn-primary btn-block" [disabled]="!form.valid">Register</button>
+            </div>
+          </div>
+
+          <div *ngIf="errorMessage" class="alert alert-danger mt-3">{{ errorMessage }}</div>
+        </form>
+
+      </div>
+
+      <div class="card-body"
+           *ngIf="registerSuccess">
+        <p>Thanks for signing up. We've sent you an email to to confirm your address.</p>
+      </div>
+    </div>
+  </div>
+</div>

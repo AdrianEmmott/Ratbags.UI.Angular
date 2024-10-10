@@ -1,7 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AccountService } from '../../../services/account.service'; // Create an AuthService to handle the API call
+import { AccountsLoginService } from '../../../services/account/accounts-login.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-login',
@@ -10,6 +11,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 export class LoginComponent implements OnInit {
   @Input() showForgotPassword: boolean = true;
   @Input() showRegister: boolean = true;
+  @Input() redirectToHomePageAfterLogin: boolean = false;
 
   form: FormGroup;
   submitted = false;
@@ -17,13 +19,18 @@ export class LoginComponent implements OnInit {
   returnUrl: string = '/';
 
   constructor(private fb: FormBuilder,
-    private authService: AccountService,
+    private loginService: AccountsLoginService,
     private router: Router,
-    private route: ActivatedRoute) {
+    private route: ActivatedRoute,
+    private toastr: ToastrService) {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
     });
+  }
+
+  get f() {
+    return this.form.controls;
   }
 
   ngOnInit() {
@@ -35,11 +42,6 @@ export class LoginComponent implements OnInit {
       });
   }
 
-  // form controls
-  get f() {
-    return this.form.controls;
-  }
-
   onSubmit() {
     this.submitted = true;
 
@@ -47,12 +49,18 @@ export class LoginComponent implements OnInit {
       return;
     }
 
-    // Call the AuthService to send the login request
-    this.authService.login(this.f['email'].value, this.f['password'].value)
+    this.loginService.login(this.f['email'].value, this.f['password'].value)
       .subscribe({
         next: response => {
-          console.log(response);
-          this.router.navigate([this.returnUrl]);
+          if (this.redirectToHomePageAfterLogin) {
+            this.router.navigate(['/']);
+          }
+
+          if (this.returnUrl !== '/') {
+            this.router.navigate([this.returnUrl]);
+          }
+
+          this.toastr.success('Logged in as ' + this.f['email'].value);
         },
         error: error => {
           console.log(error);

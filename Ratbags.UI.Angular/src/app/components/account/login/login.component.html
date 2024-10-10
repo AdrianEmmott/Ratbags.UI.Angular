@@ -28,7 +28,7 @@
 
   <div class="col-sm-12 d-flex align-items-center">
     <div class="col-sm-6 text-start pt-0 pb-2">
-      <a href="#" *ngIf="showRegister">Register</a>
+      <a [routerLink]="['/register']" *ngIf="showRegister">Register</a>
     </div>
     <div class="col-sm-6 text-end">
       <a href="#" class="me-2" *ngIf="showForgotPassword">Forgot password?</a>

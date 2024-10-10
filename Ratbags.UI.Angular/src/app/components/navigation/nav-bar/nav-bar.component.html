@@ -51,27 +51,27 @@
       </ul>
 
       <!-- TODO search -->
-      <form class="d-flex align-content-center input-group w-auto">
+      <form class="d-flex align-content-center input-group w-auto" ngbTooltip="Work in progress..." placement="top">
         <input class="form-control m-0" type="search" placeholder="Search" aria-label="Search">
         <button class="btn btn-sm btn-outline-success m-0" type="submit">Search</button>
       </form>
 
       <!-- login -->
       <div class="nav-item ms-md-3 text-end mt-3 mt-sm-0 mt-lg-0" ngbDropdown id="navbar-dropdown-login"
-           *ngIf="!(accountService.tokenValidLocally$ | async) && !onLoginPage">
+           *ngIf="!(isLoggedIn$ | async) && !onLoginPage">
         <a class="nav-link" tabindex="0" ngbDropdownToggle role="button"> Login </a>
         <div ngbDropdownMenu class="dropdown-menu dropdown-menu-end pt-3" aria-labelledby="login-dropdown" id="login-dropdown">
           <div class="container-fluid">
             <app-login class="w-100" [showRegister]="false" [showForgotPassword]="false"></app-login>
           </div>
           <div class="dropdown-divider"></div>
-          <button type="button" ngbDropdownItem>New around here? Sign up</button>
+          <a class="btn btn-sm" [routerLink]="['/register']" ngbDropdownItem>New around here? Sign up</a>
           <button type="button" ngbDropdownItem>Forgot password?</button>
         </div>
       </div>
 
       <!-- logout -->
-      <div class="nav-item ms-md-3" *ngIf="(accountService.tokenValidLocally$ | async) && !onLoginPage">
+      <div class="nav-item ms-md-3" *ngIf="(isLoggedIn$ | async) && !onLoginPage">
         <a [routerLink]="['/']"
            class="nav-link"
            tabindex="5"

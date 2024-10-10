@@ -1,0 +1,7 @@
+<section *ngIf="contentControl && tinyMCESecret">
+  <editor apiKey="{{tinyMCESecret}}"
+          #contentEditor id="contentEditor"
+          [formControl]="contentControl"
+          [init]="editorInitialisation">
+  </editor>
+</section>

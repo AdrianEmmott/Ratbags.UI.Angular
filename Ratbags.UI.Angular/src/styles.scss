@@ -1,7 +1,8 @@
 /* Importing Bootstrap SCSS file. */
 @import 'bootstrap/scss/bootstrap';
+@import 'ngx-toastr/toastr';
 
-@mixin form-control-margin {
+@mixin form-group-margin {
   margin-bottom: 1rem;
 }
 
@@ -13,9 +14,9 @@ label {
   margin-bottom: 0.5rem;
 }
 
-.form-control {
+.form-group {
   // could be a bad idea
-  @include form-control-margin;
+  @include form-group-margin;
 }
 
 #navbar-dropdown-login .dropdown-menu {

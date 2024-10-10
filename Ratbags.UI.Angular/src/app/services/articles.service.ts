@@ -10,11 +10,13 @@ import { Article } from '../interfaces/article';
   providedIn: 'root'
 })
 export class ArticlesService {
-  //private apiUrl = "https://localhost:7159/api/articles";
   private apiUrl = `${this.appConfigService.apiBaseUrl}/api/articles`;
 
   constructor(private http: HttpClient,
-    private appConfigService: AppConfigService) { }
+    private appConfigService: AppConfigService) {
+    console.log('this.appConfigService.apiBaseUrl', this.appConfigService.apiBaseUrl);
+
+  }
 
   create(article: Article): Observable<HttpResponse<string>> {
     return this.http.post<string>(`${this.apiUrl}`, article, { observe: 'response' });

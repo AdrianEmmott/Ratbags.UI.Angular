@@ -1,13 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { filter } from 'rxjs';
 
-import { AccountService } from '../../../services/account.service';
+import { AccountsLoginService } from '../../../services/account/accounts-login.service';
 import { ThemesService } from '../../../services/themes.service';
 
 // icons
 import { faSun } from '@fortawesome/free-regular-svg-icons';
 import { faMoon } from '@fortawesome/free-solid-svg-icons';
+import { AccountsService } from '../../../services/account/accounts.service';
 
 @Component({
   selector: 'app-nav-bar',
@@ -15,6 +17,8 @@ import { faMoon } from '@fortawesome/free-solid-svg-icons';
   styleUrl: './nav-bar.component.scss'
 })
 export class NavBarComponent implements OnInit {
+  isLoggedIn$ = this.accountsService.validateToken$;
+
   collapsed: boolean = true;
   showLogin: boolean = true;
   onLoginPage: boolean = false;
@@ -25,8 +29,10 @@ export class NavBarComponent implements OnInit {
 
   constructor(public router: Router,
     public route: ActivatedRoute,
-    public accountService: AccountService,
-    public themesService: ThemesService) {
+    public accountsService: AccountsService,
+    private accountsLoginService: AccountsLoginService,
+    public themesService: ThemesService,
+    private toastr: ToastrService) {
     // hide login if we're at /login
     this.router.events
       .pipe(
@@ -35,15 +41,16 @@ export class NavBarComponent implements OnInit {
       )
       .subscribe({
         next: (event: any) => {
-          this.onLoginPage = event.url.indexOf('/login') > -1;
+          this.onLoginPage = event.url.indexOf('/login') > -1 || event.url.indexOf('/register') > -1;
         }
       });
   }
 
   ngOnInit() {
+    
   }
   
   logout() {
-    this.accountService.logout();
+    this.accountsLoginService.logout();
   }
 }

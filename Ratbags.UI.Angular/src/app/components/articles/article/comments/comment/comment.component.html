@@ -1,8 +1,8 @@
-<section class="mt-5" *ngIf="form">
+<div class="mt-5" *ngIf="form && isLoggedIn">
   <form [formGroup]="form">
     <p>
       <fa-icon [icon]="faCommentAlt" class="me-2"></fa-icon>
-      <strong>Add a comment</strong>
+      <strong *ngIf="isLoggedIn">Add a comment</strong>
     </p>
     <div>
       <label for="commentName" class="col-sm-4">Name</label>
@@ -11,14 +11,19 @@
       <textarea class="form-control col-sm-4" placeholder="Your comment" formControlName="comment"></textarea>
     </div>
     <div class="comment-footer">
-      <button class="btn btn-sm btn-outline-primary"
+      <button class="btn btn-sm btn-outline-primary mt-3"
               id="addComment"
               (click)="addComment()"
               [disabled]="!form.valid"
               *ngIf="isLoggedIn">
         Add comment
       </button>
-      <a [routerLink]="['/login']" [queryParams]="{ returnUrl: router.url }" *ngIf="!isLoggedIn">Login to comment</a>
+
     </div>
   </form>
-</section>
+</div>
+<div class="mt-5" *ngIf="!isLoggedIn">
+  <a [routerLink]="['/login']" [queryParams]="{ returnUrl: router.url }">
+    Login to comment
+  </a>
+</div>

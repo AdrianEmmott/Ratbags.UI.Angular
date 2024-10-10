@@ -1,11 +1,9 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { EditorComponent } from '@tinymce/tinymce-angular';
-
+import { AccountsService } from '../../../services/account/accounts.service';
 import { Article } from '../../../interfaces/article';
-import { AccountService } from '../../../services/account.service';
 import { AppConfigService } from '../../../services/app-config.service';
 import { ArticlesService } from '../../../services/articles.service';
 import { ComemntsService } from '../../../services/comments.service';
@@ -19,30 +17,12 @@ import { faCoffee } from '@fortawesome/free-solid-svg-icons';
   styleUrl: './article.component.scss',
 })
 export class ArticleComponent implements OnInit {
-  @ViewChild('contentEditor') contentEditor?: EditorComponent; // tinymce
+  form!: FormGroup;
 
-  isLoggedIn$ = this.accountService.validateToken$;
-  isLoggedIn: boolean = false;
+  isLoggedIn$ = this.accountsService.validateToken$;
 
-  // TODO work in the current theme
-  readonly editorInitialisation: EditorComponent["init"] = {
-    plugins: ["help", "advcode"],
-    //skin: "oxide", // regular
-    //content_css: "default",
-    //skin: "oxide-dark", // force dark
-    //content_css: "dark"
-    skin: (window.matchMedia("(prefers-color-scheme: dark)").matches ? "oxide-dark" : ""), // match user prefs
-    content_css: (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "")
-  };
-
-  article: Article | undefined;
-
-  tinyMCESecret = this.appConfigService.tinyMCEKey;
-  creating: boolean = false;
-  editing: boolean = false;
-  form: FormGroup | undefined;
-
-  originalContent: string = '';
+  article!: Article;
+  showEditor: boolean = false;
 
   // icons
   faCoffee = faCoffee;
@@ -51,13 +31,13 @@ export class ArticleComponent implements OnInit {
     public router: Router,
     private formBuilder: FormBuilder,
     private appConfigService: AppConfigService,
-    public accountService: AccountService,
+    public accountsService: AccountsService,
     private articlesService: ArticlesService,
     private commentsService: ComemntsService) {
   }
 
   ngOnInit() {
-    this.accountService.validateToken(); // check against server once
+    this.accountsService.validateToken(); // is user logged in - check once!
 
     this.route.paramMap.subscribe({
       next: params => {
@@ -73,9 +53,9 @@ export class ArticleComponent implements OnInit {
   }
 
   setupForm() {
-    this.form = this.formBuilder.group({
-      title: [this.article?.title],
-      content: [this.article?.content]
+    this.form = new FormGroup({
+      title: new FormControl(this.article?.title, [Validators.required]),
+      content: new FormControl(this.article.content, [Validators.required])
     });
   }
 
@@ -83,8 +63,6 @@ export class ArticleComponent implements OnInit {
     this.articlesService.getArticle(id)
       .subscribe({
         next: (result: Article) => {
-          this.article = result;
-
           this.article = {
             id: result.id,
             title: result.title,
@@ -95,14 +73,31 @@ export class ArticleComponent implements OnInit {
             comments: result.comments,
             userId: result.userId
           }
-
-          this.originalContent = this.article.content;
         }
       });
   }
 
+  onSubmit() {
+    if (this.form) {
+      if (!this.article.id) {
+        this.create();
+      }
+      else {
+        this.update();
+      }
+    }
+  }
+  cancel() {
+    if (!this.article.id) {
+      this.router.navigate(['/articles']);
+    }
+    else {
+      this.form?.patchValue({ title: this.article?.title });
+      this.form?.patchValue({ content: this.article?.content });
+      this.showEditor = false;
+    }
+  }
 
-  // TODO this all needs breaking out
   setupCreate() {
     this.article = {
       id: '',
@@ -115,13 +110,9 @@ export class ArticleComponent implements OnInit {
       userId: ''
     }
 
-    this.editing = false;
-    this.creating = true;
+    this.showEditor = true;
+
     this.setupForm();
-  }
-  createCancel() {
-    this.creating = false;
-    this.router.navigate(['/articles']);
   }
   create() {
     if (this.article) {
@@ -145,25 +136,15 @@ export class ArticleComponent implements OnInit {
               this.router.navigate(['/articles', id]);
             }
 
-            this.editing = false;
-            this.creating = false;
+            this.showEditor = false;
           }
         });
     }
   }
 
   edit() {
-    this.editing = true;
     this.setupForm();
-    this.originalContent = this.form?.get('content')?.value;
-  }
-  updateCancel() {
-    this.editing = false;
-
-    if (this.contentEditor) {
-      this.form?.patchValue({ content: this.originalContent });
-      this.contentEditor.editor.setContent(this.originalContent);
-    }
+    this.showEditor = true;
   }
   update() {
     if (this.article) {
@@ -173,7 +154,7 @@ export class ArticleComponent implements OnInit {
       this.articlesService.update(<Article>this.article)
         .subscribe({
           next: result => {
-            this.editing = false;
+            this.showEditor = false;
           }
         });
     }

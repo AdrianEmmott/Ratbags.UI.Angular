@@ -4,6 +4,10 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AppRoutingModule } from './app-routing.module';
+import { CommonModule } from '@angular/common';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
+import { ToastrModule } from 'ngx-toastr';
 
 // interceptors
 import { jwtInterceptor } from './interceptors/jwt.interceptor';
@@ -23,10 +27,15 @@ import { CommentsComponent } from './components/articles/article/comments/commen
 import { ArticlesComponent } from './components/articles/articles.component';
 import { HomeComponent } from './components/home/home.component';
 import { NavBarComponent } from './components/navigation/nav-bar/nav-bar.component';
+import { ContentEditorComponent } from './components/editor/content-editor/content-editor.component';
+import { GoogleSigninCallbackComponent } from './components/account/google-sign-in-callback/google-sign-in-callback.component';
+import { ImageUploadComponent } from './components/upload/image-upload/image-upload.component';
+import { SearchComponent } from './components/search/search.component';
+import { RegisterComponent } from './components/account/register/register.component';
 
 // services
 import { AppConfigService } from './services/app-config.service';
-import { SearchComponent } from './components/search/search.component';
+
 
 @NgModule({
   declarations: [
@@ -41,6 +50,10 @@ import { SearchComponent } from './components/search/search.component';
     NavBarComponent,
     LoginWrapperComponent,
     SearchComponent,
+    RegisterComponent,
+    ImageUploadComponent,
+    ContentEditorComponent,
+    GoogleSigninCallbackComponent
   ],
   imports: [
     BrowserModule,
@@ -49,7 +62,15 @@ import { SearchComponent } from './components/search/search.component';
     FormsModule,
     ReactiveFormsModule,
     FontAwesomeModule,
-    NgbModule
+    NgbModule,
+
+    CommonModule,
+    BrowserAnimationsModule, // required animations module
+    ToastrModule.forRoot({
+      timeOut: 5000,
+      positionClass: 'toast-bottom-right',
+      preventDuplicates: true,
+    }),
   ],
   providers: [
     provideHttpClient(

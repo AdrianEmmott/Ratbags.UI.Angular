@@ -23,7 +23,6 @@
         <p>{{ comment.content }}</p>
         <div class="comment-footer">
           <button class="btn btn-sm btn-outline-primary" *ngIf="isLoggedIn">Reply</button>
-          <a [routerLink]="['/login']" [queryParams]="{ returnUrl: router.url }" *ngIf="!isLoggedIn">Login to reply</a>
         </div>
         <hr />
       </div>
