@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { ExternalSigninCallbackComponent } from './components/account/external-sign-in-callback/external-sign-in-callback.component';
+import { ExternalSigninCallbackComponent } from './components/account/external-sigin-in/external-sign-in-callback/external-sign-in-callback.component';
 import { LoginWrapperComponent } from './components/account/login-wrapper/login-wrapper.component';
 import { RegisterComponent } from './components/account/register/register.component';
 import { ArticleComponent } from './components/articles/article/article.component';

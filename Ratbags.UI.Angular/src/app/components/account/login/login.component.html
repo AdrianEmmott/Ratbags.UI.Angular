@@ -35,7 +35,7 @@
 
   <div class="col-sm-12 d-flex align-items-center">
     <div class="col-sm-6 text-start pt-0 pb-2" *ngIf="showRegister">
-      <a [routerLink]="['/register']">Register</a>
+      Don't have an account? <a [routerLink]="['/register']">Sign up</a>
     </div>
     <div class="col-sm-6 text-start pt-0 pb-2 mt-2" *ngIf="showExternalSigninLink">
       <a [routerLink]="['/login']" ngbTooltip="Sign in with Google or Facebook">Google/Facebook</a>
@@ -48,7 +48,7 @@
 
   <div class="col-sm-12 text-start mt-2"
        *ngIf="showExternalSigninButtons">
-    <p><strong>Or sign in with:</strong></p>
+    <p>Or sign in with:</p>
     <app-google-sign-in-button></app-google-sign-in-button>
     <app-facebook-sign-in-button class="ms-2"></app-facebook-sign-in-button>
     <div class="fb-login-button" data-width="" data-size="" data-button-type=""

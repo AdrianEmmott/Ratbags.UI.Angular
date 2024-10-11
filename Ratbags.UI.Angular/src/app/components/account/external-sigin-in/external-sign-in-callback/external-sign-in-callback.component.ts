@@ -1,9 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { AccountsService } from '../../../services/account/accounts.service';
-import { ExternalSigninService } from '../../../services/account/external-signin.service';
-import { ExternalAuthenticationProvidersEnum } from '../../../enums/external-authentication-providers.enum';
+import { AccountsService } from '../../../../services/account/accounts.service';
+import { ExternalSigninService } from '../../../../services/account/external-signin.service';
+import { ExternalAuthenticationProvidersEnum } from '../../../../enums/external-authentication-providers.enum';
 
 @Component({
   selector: 'app-external-sign-in-callback',

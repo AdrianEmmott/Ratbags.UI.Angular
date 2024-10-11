@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ExternalSigninService } from '../../../services/account/external-signin.service';
+import { ExternalSigninService } from '../../../../services/account/external-signin.service';
 
 @Component({
   selector: 'app-facebook-sign-in-button',
