@@ -1,18 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { ExternalSigninService } from '../../../services/account/external-signin.service';
 import { ThemesService } from '../../../services/themes.service';
 
 @Component({
-  selector: 'app-login-wrapper',
-  templateUrl: './login-wrapper.component.html',
-  styleUrl: './login-wrapper.component.scss'
+  selector: 'app-google-sign-in-button',
+  templateUrl: './google-sign-in-button.component.html',
+  styleUrl: './google-sign-in-button.component.scss'
 })
-export class LoginWrapperComponent implements OnInit {
+export class GoogleSignInButtonComponent implements OnInit {
   constructor(
     private router: Router,
-    private themesService: ThemesService) {
-
-  }
+    private externalSigninService: ExternalSigninService,
+    private themesService: ThemesService
+  ) { }
 
   ngOnInit() {
     // set google button styling to match theme
@@ -31,5 +32,9 @@ export class LoginWrapperComponent implements OnInit {
           }
         }
       });
+  }
+
+  signin() {
+    this.externalSigninService.signin('Google');
   }
 }

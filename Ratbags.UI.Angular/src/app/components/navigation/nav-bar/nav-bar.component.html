@@ -62,10 +62,14 @@
         <a class="nav-link" tabindex="0" ngbDropdownToggle role="button"> Login </a>
         <div ngbDropdownMenu class="dropdown-menu dropdown-menu-end pt-3" aria-labelledby="login-dropdown" id="login-dropdown">
           <div class="container-fluid">
-            <app-login class="w-100" [showRegister]="false" [showForgotPassword]="false"></app-login>
+            <app-login class="w-100"
+                       [showRegister]="false"
+                       [showForgotPassword]="false"
+                       [showExternalSigninButtons]="false"
+                       [showExternalSigninLink]="true"></app-login>
           </div>
           <div class="dropdown-divider"></div>
-          <a class="btn btn-sm" [routerLink]="['/register']" ngbDropdownItem>New around here? Sign up</a>
+          <a class="btn" [routerLink]="['/register']" ngbDropdownItem>New around here? Sign up</a>
           <button type="button" ngbDropdownItem>Forgot password?</button>
         </div>
       </div>

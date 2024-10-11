@@ -20,6 +20,7 @@ import { EditorModule } from '@tinymce/tinymce-angular';
 import { AccountComponent } from './components/account/account/account.component';
 import { LoginWrapperComponent } from './components/account/login-wrapper/login-wrapper.component';
 import { LoginComponent } from './components/account/login/login.component';
+import { ExternalSigninCallbackComponent } from './components/account/external-sign-in-callback/external-sign-in-callback.component';
 import { AppComponent } from './components/app.component';
 import { ArticleComponent } from './components/articles/article/article.component';
 import { CommentComponent } from './components/articles/article/comments/comment/comment.component';
@@ -28,14 +29,14 @@ import { ArticlesComponent } from './components/articles/articles.component';
 import { HomeComponent } from './components/home/home.component';
 import { NavBarComponent } from './components/navigation/nav-bar/nav-bar.component';
 import { ContentEditorComponent } from './components/editor/content-editor/content-editor.component';
-import { GoogleSigninCallbackComponent } from './components/account/google-sign-in-callback/google-sign-in-callback.component';
 import { ImageUploadComponent } from './components/upload/image-upload/image-upload.component';
 import { SearchComponent } from './components/search/search.component';
 import { RegisterComponent } from './components/account/register/register.component';
+import { GoogleSignInButtonComponent } from './components/account/google-sign-in-button/google-sign-in-button.component';
+import { FacebookSignInButtonComponent } from './components/account/facebook-sign-in-button/facebook-sign-in-button.component';
 
 // services
 import { AppConfigService } from './services/app-config.service';
-
 
 @NgModule({
   declarations: [
@@ -47,13 +48,15 @@ import { AppConfigService } from './services/app-config.service';
     CommentComponent,
     AccountComponent,
     LoginComponent,
-    NavBarComponent,
     LoginWrapperComponent,
+    ExternalSigninCallbackComponent,
+    GoogleSignInButtonComponent,
+    FacebookSignInButtonComponent,
+    NavBarComponent,
     SearchComponent,
     RegisterComponent,
     ImageUploadComponent,
     ContentEditorComponent,
-    GoogleSigninCallbackComponent
   ],
   imports: [
     BrowserModule,

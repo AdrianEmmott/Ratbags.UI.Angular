@@ -63,8 +63,8 @@
 
               <button type="button" class="btn btn-outline-secondary"
                       (click)="togglePasswordVisibility('confirm-password')">
-                <fa-icon [icon]="faEye" class="me-2 fa-regular" *ngIf="showPassword"></fa-icon>
-                <fa-icon [icon]="faEyeSlash" class="me-2 fa-regular" *ngIf="!showPassword"></fa-icon>
+                <fa-icon [icon]="faEye" class="me-2 fa-regular" *ngIf="!showPassword"></fa-icon>
+                <fa-icon [icon]="faEyeSlash" class="me-2 fa-regular" *ngIf="showPassword"></fa-icon>
               </button>
 
               <div *ngIf="f['confirmPassword'].errors && f['confirmPassword'].touched" class="invalid-feedback">
@@ -88,6 +88,10 @@
             <div class="col-sm-6 text-end">
               <button type="submit" class="btn btn-primary btn-block" [disabled]="!form.valid">Register</button>
             </div>
+          </div>
+
+          <div class="mt-2">
+            <app-google-sign-in-button></app-google-sign-in-button>
           </div>
 
           <div *ngIf="errorMessage" class="alert alert-danger mt-3">{{ errorMessage }}</div>

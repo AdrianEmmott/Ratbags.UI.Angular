@@ -1,8 +1,11 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AccountsLoginService } from '../../../services/account/accounts-login.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { AccountsLoginService } from '../../../services/account/accounts-login.service';
+
+import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
+import { ExternalSigninService } from '../../../services/account/external-signin.service';
 
 @Component({
   selector: 'app-login',
@@ -12,14 +15,23 @@ export class LoginComponent implements OnInit {
   @Input() showForgotPassword: boolean = true;
   @Input() showRegister: boolean = true;
   @Input() redirectToHomePageAfterLogin: boolean = false;
+  
+  @Input() showExternalSigninButtons: boolean = false;
+  @Input() showExternalSigninLink: boolean = false;
 
   form: FormGroup;
   submitted = false;
+  showPassword: boolean = false;
   errorMessage: string | null = null;
   returnUrl: string = '/';
 
+  // icons
+  faEye = faEye;
+  faEyeSlash = faEyeSlash;
+
   constructor(private fb: FormBuilder,
     private loginService: AccountsLoginService,
+    private externalSigninService: ExternalSigninService,
     private router: Router,
     private route: ActivatedRoute,
     private toastr: ToastrService) {
@@ -63,8 +75,16 @@ export class LoginComponent implements OnInit {
           this.toastr.success('Logged in as ' + this.f['email'].value);
         },
         error: error => {
-          console.log(error);
+          this.toastr.error('Sorry, there was an error logging in. Please check your credentials and try again');
         }
       });
+  }
+
+  togglePasswordVisibility(control: string) {
+    this.showPassword = !this.showPassword;
+  }
+
+  facebookExternalSignin(providerName: string) {
+    this.externalSigninService.signin(providerName);
   }
 }

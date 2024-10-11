@@ -15,20 +15,30 @@
 
   <div class="form-group">
     <label for="password">Password</label>
-    <input type="password"
-           class="form-control login-input"
-           id="password"
-           formControlName="password"
-           placeholder="Enter password"
-           [ngClass]="{ 'is-invalid': submitted && f['password'].errors }" />
-    <div *ngIf="submitted && f['password'].errors" class="invalid-feedback">
-      <div *ngIf="f['password'].errors['required']">Password is required</div>
+    <div class="input-group">
+      <input [type]="showPassword ? 'text' : 'password'"
+             class="form-control login-input"
+             id="password"
+             formControlName="password"
+             placeholder="Enter password"
+             [ngClass]="{ 'is-invalid': submitted && f['password'].errors }" />
+      <button type="button" class="btn btn-outline-secondary"
+              (click)="togglePasswordVisibility('confirm-password')">
+        <fa-icon [icon]="faEye" class="me-2 fa-regular" *ngIf="!showPassword"></fa-icon>
+        <fa-icon [icon]="faEyeSlash" class="me-2 fa-regular" *ngIf="showPassword"></fa-icon>
+      </button>
+      <div *ngIf="submitted && f['password'].errors" class="invalid-feedback">
+        <div *ngIf="f['password'].errors['required']">Password is required</div>
+      </div>
     </div>
   </div>
 
   <div class="col-sm-12 d-flex align-items-center">
-    <div class="col-sm-6 text-start pt-0 pb-2">
-      <a [routerLink]="['/register']" *ngIf="showRegister">Register</a>
+    <div class="col-sm-6 text-start pt-0 pb-2" *ngIf="showRegister">
+      <a [routerLink]="['/register']">Register</a>
+    </div>
+    <div class="col-sm-6 text-start pt-0 pb-2 mt-2" *ngIf="showExternalSigninLink">
+      <a [routerLink]="['/login']" ngbTooltip="Sign in with Google or Facebook">Google/Facebook</a>
     </div>
     <div class="col-sm-6 text-end">
       <a href="#" class="me-2" *ngIf="showForgotPassword">Forgot password?</a>
@@ -36,5 +46,14 @@
     </div>
   </div>
 
+  <div class="col-sm-12 text-start mt-2"
+       *ngIf="showExternalSigninButtons">
+    <p><strong>Or sign in with:</strong></p>
+    <app-google-sign-in-button></app-google-sign-in-button>
+    <app-facebook-sign-in-button class="ms-2"></app-facebook-sign-in-button>
+    <div class="fb-login-button" data-width="" data-size="" data-button-type=""
+         data-layout="" data-auto-logout-link="false" data-use-continue-as="false">
+    </div>
+  </div>
   <div *ngIf="errorMessage" class="alert alert-danger mt-3">{{ errorMessage }}</div>
 </form>

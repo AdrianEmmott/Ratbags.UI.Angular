@@ -14,8 +14,6 @@ export class ArticlesService {
 
   constructor(private http: HttpClient,
     private appConfigService: AppConfigService) {
-    console.log('this.appConfigService.apiBaseUrl', this.appConfigService.apiBaseUrl);
-
   }
 
   create(article: Article): Observable<HttpResponse<string>> {
