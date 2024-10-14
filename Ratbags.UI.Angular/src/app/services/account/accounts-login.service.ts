@@ -1,11 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { jwtDecode } from 'jwt-decode';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
-import { AppConfigService } from '../app-config.service';
 import { Router } from '@angular/router';
+import { AppConfigService } from '../app-config.service';
 import { AccountsService } from './accounts.service';
 
 @Injectable({
@@ -24,20 +23,19 @@ export class AccountsLoginService {
     private accountsService: AccountsService) { }
 
   login(email: string, password: string): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}`, { email, password }).pipe(
-      map((response) => {
-        if (response && response.token) {
-          this.accountsService.storeToken(response);
+    return this.http.post<any>(`${this.apiUrl}`, { email, password })
+      .pipe(
+        map(
+          (response) => {
+            if (response && response.token) {
+              this.accountsService.storeToken(response);
 
-          //localStorage.setItem('jwtToken', response.token);
-          //localStorage.setItem('email', email);
+              this.accountsService.validateToken();
+            }
 
-          this.accountsService.validateToken();
-        }
-
-        return response;
-      })
-    );
+            return response;
+          })
+      );
   }
 
   logout() {

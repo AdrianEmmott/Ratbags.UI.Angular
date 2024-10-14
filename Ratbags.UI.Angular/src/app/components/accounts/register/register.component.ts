@@ -25,8 +25,8 @@ export class RegisterComponent implements OnInit {
     this.form = new FormGroup(
       {
         email: new FormControl('', [Validators.required, Validators.email]),
-        password: new FormControl('', [Validators.required, Validators.minLength(8), Validators.pattern(/^(?=[^A-Z]*[A-Z])(?=[^a-z]*[a-z])(?=\D*\d)(?=.*[!@#$%^&*]).{8,}$/)]),
-        confirmPassword: new FormControl('', [Validators.required, Validators.minLength(8)]),
+        //password: new FormControl('', [Validators.required, Validators.minLength(8), Validators.pattern(/^(?=[^A-Z]*[A-Z])(?=[^a-z]*[a-z])(?=\D*\d)(?=.*[!@#$%^&*]).{8,}$/)]),
+        //confirmPassword: new FormControl('', [Validators.required, Validators.minLength(8)]),
       },
       {
         validators: this.confirmPasswordValidator,
@@ -54,16 +54,23 @@ export class RegisterComponent implements OnInit {
       return;
     }
 
-    this.registerService.register(this.f['email'].value, this.f['password'].value)
+    this.registerService
+      .register(this.f['email'].value, this.f['password'].value)
       .subscribe({
         next: response => {
           this.registerSuccess = true;
+          console.log('register confirm email url',response);
         },
         error: error => {
           this.errorMessage = "An error occured creating your account";
           console.log(error);
         }
       });
+  }
+
+  onPasswordFormReady(passwordForm: FormGroup) {
+    this.form.addControl('password', passwordForm.get('password'));
+    this.form.addControl('confirmPassword', passwordForm.get('confirmPassword'));
   }
 
   togglePasswordVisibility(control: string) {

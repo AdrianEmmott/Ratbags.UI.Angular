@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ThemesService } from '../../../services/themes.service';
+import { ThemesService } from '../../../../services/themes.service';
 
 @Component({
   selector: 'app-login-wrapper',

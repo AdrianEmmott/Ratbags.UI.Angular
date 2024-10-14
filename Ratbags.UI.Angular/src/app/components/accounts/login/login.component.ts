@@ -19,31 +19,35 @@ export class LoginComponent implements OnInit {
   @Input() showExternalSigninButtons: boolean = false;
   @Input() showExternalSigninLink: boolean = false;
 
+  loginAttempts: number = 0;
   form: FormGroup;
   submitted = false;
   showPassword: boolean = false;
   errorMessage: string | null = null;
   returnUrl: string = '/';
 
+  get f() {
+    return this.form.controls;
+  }
+
   // icons
   faEye = faEye;
   faEyeSlash = faEyeSlash;
 
-  constructor(private fb: FormBuilder,
+  constructor(
+    private formBuilder: FormBuilder,
     private loginService: AccountsLoginService,
     private externalSigninService: ExternalSigninService,
     private router: Router,
     private route: ActivatedRoute,
     private toastr: ToastrService) {
-    this.form = this.fb.group({
+    this.form = this.formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
     });
   }
 
-  get f() {
-    return this.form.controls;
-  }
+  
 
   ngOnInit() {
     this.route.queryParams
@@ -75,6 +79,13 @@ export class LoginComponent implements OnInit {
           this.toastr.success('Logged in as ' + this.f['email'].value);
         },
         error: error => {
+          this.loginAttempts++;
+          console.log('this.loginAttempts', this.loginAttempts);
+
+          if (this.loginAttempts === 5) {
+            this.router.navigate(['/login-trouble']);
+          }
+
           this.toastr.error('Sorry, there was an error logging in. Please check your credentials and try again');
         }
       });
@@ -82,9 +93,5 @@ export class LoginComponent implements OnInit {
 
   togglePasswordVisibility(control: string) {
     this.showPassword = !this.showPassword;
-  }
-
-  facebookExternalSignin(providerName: string) {
-    this.externalSigninService.signin(providerName);
   }
 }

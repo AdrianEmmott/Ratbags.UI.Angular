@@ -17,13 +17,18 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { EditorModule } from '@tinymce/tinymce-angular';
 
 // components
-import { AccountComponent } from './components/account/account/account.component';
-import { ExternalSigninCallbackComponent } from './components/account/external-sigin-in/external-sign-in-callback/external-sign-in-callback.component';
-import { FacebookSignInButtonComponent } from './components/account/external-sigin-in/facebook-sign-in-button/facebook-sign-in-button.component';
-import { GoogleSignInButtonComponent } from './components/account/external-sigin-in/google-sign-in-button/google-sign-in-button.component';
-import { LoginWrapperComponent } from './components/account/login-wrapper/login-wrapper.component';
-import { LoginComponent } from './components/account/login/login.component';
-import { RegisterComponent } from './components/account/register/register.component';
+import { AccountComponent } from './components/accounts/account/account.component';
+import { ExternalSigninCallbackComponent } from './components/accounts/external-sign-in/external-sign-in-callback/external-sign-in-callback.component';
+import { FacebookSignInButtonComponent } from './components/accounts/external-sign-in/facebook-sign-in-button/facebook-sign-in-button.component';
+import { GoogleSignInButtonComponent } from './components/accounts/external-sign-in/google-sign-in-button/google-sign-in-button.component';
+import { LoginWrapperComponent } from './components/accounts/login/login-wrapper/login-wrapper.component';
+import { LoginComponent } from './components/accounts/login/login.component';
+import { PasswordConfirmationComponent } from './components/accounts/password-confirmation/password-confirmation.component';
+import { RegisterConfirmEmailComponent } from './components/accounts/register/register-confirm-email/register-confirm-email.component';
+import { RegisterComponent } from './components/accounts/register/register.component';
+import { ResendRegisterConfirmEmailComponent } from './components/accounts/register/resend-register-confirm-email/resend-register-confirm-email.component';
+import { ResetPasswordComponent } from './components/accounts/reset-password/reset-passord.component';
+import { ResetPasswordUpdateComponent } from './components/accounts/reset-password/reset-password-update/reset-password-update.component';
 import { AppComponent } from './components/app.component';
 import { ArticleComponent } from './components/articles/article/article.component';
 import { CommentComponent } from './components/articles/article/comments/comment/comment.component';
@@ -36,7 +41,10 @@ import { SearchComponent } from './components/search/search.component';
 import { ImageUploadComponent } from './components/upload/image-upload/image-upload.component';
 
 // services
+import { LoginTroubleComponent } from './components/accounts/login/login-trouble/login-trouble.component';
 import { AppConfigService } from './services/app-config.service';
+
+
 
 @NgModule({
   declarations: [
@@ -57,6 +65,12 @@ import { AppConfigService } from './services/app-config.service';
     RegisterComponent,
     ImageUploadComponent,
     ContentEditorComponent,
+    PasswordConfirmationComponent,
+    ResetPasswordComponent,
+    ResetPasswordUpdateComponent,
+    LoginTroubleComponent,
+    ResendRegisterConfirmEmailComponent,
+    RegisterConfirmEmailComponent,
   ],
   imports: [
     BrowserModule,

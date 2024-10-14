@@ -28,7 +28,6 @@ export class ExternalSigninCallbackComponent implements OnInit {
     this.route.paramMap
       .subscribe({
         next: params => {
-          console.log(params);
           providerName = params.get('providerName') ?? ExternalAuthenticationProvidersEnum[ExternalAuthenticationProvidersEnum.None].toLowerCase();
 
           this.externalSigninService.getToken(providerName)

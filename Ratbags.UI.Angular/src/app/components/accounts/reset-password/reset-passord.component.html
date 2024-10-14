@@ -1,0 +1,41 @@
+<div class="row justify-content-center mt-5">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">
+        <h3>Forgot password</h3>
+      </div>
+      <div class="card-body">
+        <form class="w-100"
+              [formGroup]="form"
+              *ngIf="!submitted"
+              (ngSubmit)="onSubmit()">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email"
+                   class="form-control login-input"
+                   id="email"
+                   formControlName="email"
+                   placeholder="Enter your email address to reset your password"
+                   [ngClass]="{ 'is-invalid': f['email'].errors }" />
+            <div *ngIf="f['email'].touched && f['email'].errors" class="invalid-feedback">
+              <div *ngIf="f['email'].touched && f['email'].errors['required']">Email is required</div>
+              <div *ngIf="f['email'].touched && f['email'].errors['email']">Invalid email format</div>
+            </div>
+          </div>
+
+          <!-- request password reset button-->
+          <div class="align-items-center">
+            <div class="text-end">
+              <button type="submit" class="btn btn-primary btn-block" [disabled]="!form.valid">Request password reset</button>
+            </div>
+          </div>
+        </form>
+
+        <!-- email sent message -->
+        <div *ngIf="submitted">
+          <p>If {{ f['email'].value }} exists in our system, a password reset email is on its way - please check your email and spam folder</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

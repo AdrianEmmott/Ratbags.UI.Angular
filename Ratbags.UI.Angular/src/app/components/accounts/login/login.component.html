@@ -41,7 +41,7 @@
       <a [routerLink]="['/login']" ngbTooltip="Sign in with Google or Facebook">Google/Facebook</a>
     </div>
     <div class="col-sm-6 text-end">
-      <a href="#" class="me-2" *ngIf="showForgotPassword">Forgot password?</a>
+      <a [routerLink]="['/forgot-password']" class="me-2" *ngIf="showForgotPassword">Forgot password?</a>
       <button type="submit" class="btn btn-primary btn-block" [disabled]="!form.valid">Login</button>
     </div>
   </div>

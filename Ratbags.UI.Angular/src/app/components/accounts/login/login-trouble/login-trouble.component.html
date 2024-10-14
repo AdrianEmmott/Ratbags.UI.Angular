@@ -1,0 +1,35 @@
+<div class="row justify-content-center mt-5">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">
+        <h3>Trouble logging in?</h3>
+      </div>
+      <div class="card-body">
+        <p>If you're having trouble logging in, try the following:</p>
+        <ul>
+          <li>
+            <p>
+              Can't remember your password? <a [routerLink]="['/forgot-password']">Forgot password</a>
+            </p>
+          </li>
+          <li>
+            <p>
+              Password definitely correct? Check your email for:
+            </p>
+            <p>
+              <i>Confirm your email address with Ratbags</i>
+            </p>
+            <p>
+              If you can't find it, <a [routerLink]="['/resend-confirm-email']">request another one here</a>. You won't be able to login until you confirm your email address. 
+            </p>
+          </li>
+          <li>
+            <p>If none of this works, try signing in with one of these:</p>
+            <app-google-sign-in-button></app-google-sign-in-button>
+            <app-facebook-sign-in-button class="ms-2"></app-facebook-sign-in-button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
