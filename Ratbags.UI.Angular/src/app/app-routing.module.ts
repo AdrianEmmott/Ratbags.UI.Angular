@@ -16,8 +16,10 @@ const routes: Routes = [
   { path: '', component: HomeComponent }, // Default route
   { path: 'home', component: HomeComponent },
   { path: 'register', component: RegisterComponent },
-  {
-    path: 'register-confirm-email/:user-id/:token', component: RegisterConfirmEmailComponent },
+
+  { path: 'register-confirm-email', component: RegisterConfirmEmailComponent },
+  { path: 'register-confirm-email/:user-id/:token', component: RegisterConfirmEmailComponent },
+  
   { path: 'resend-register-confirm-email', component: ResendRegisterConfirmEmailComponent },
 
   { path: 'login', component: LoginWrapperComponent }, 

@@ -1,1 +1,20 @@
-<p>register-confirm-email works!</p>
+<div class="row justify-content-center mt-5">
+  <div class="col-md-6">
+    <div class="card" *ngIf="!registerSuccess">
+      <div class="card-header" >
+        <h3>Please confirm your email address </h3>
+      </div>
+      <div class="card-body">
+        <p>Thanks for signing up. We've sent you an email - please click on the confirmation link to complete your registration</p>
+      </div>
+    </div>
+    <div class="card" *ngIf="registerSuccess">
+      <div class="card-header">
+        <h3>Successfully registered!</h3>
+      </div>
+      <div class="card-body">
+        <p>Thanks for confirming your email address. You can now <a [routerLink]="['/login']">login here</a></p>
+      </div>
+    </div>
+  </div>
+</div>

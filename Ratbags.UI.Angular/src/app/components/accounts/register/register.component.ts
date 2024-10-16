@@ -1,8 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
 import { AccountsRegisterService } from '../../../services/account/accounts-register.service';
-import { AbstractControl, AbstractControlOptions, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 
 import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
+
 
 @Component({
   selector: 'app-register',
@@ -20,23 +23,17 @@ export class RegisterComponent implements OnInit {
   faEye = faEye;
   faEyeSlash = faEyeSlash;
 
-  constructor(private formBuilder: FormBuilder,
+  constructor(
+    private router: Router,
+    private formBuilder: FormBuilder,
+    private toastreService: ToastrService,
     private registerService: AccountsRegisterService) {
     this.form = new FormGroup(
       {
         email: new FormControl('', [Validators.required, Validators.email]),
-        //password: new FormControl('', [Validators.required, Validators.minLength(8), Validators.pattern(/^(?=[^A-Z]*[A-Z])(?=[^a-z]*[a-z])(?=\D*\d)(?=.*[!@#$%^&*]).{8,}$/)]),
-        //confirmPassword: new FormControl('', [Validators.required, Validators.minLength(8)]),
-      },
-      {
-        validators: this.confirmPasswordValidator,
+        // password / confirm password controls/validation added by passwordConfirmation component
       }
     );
-  }
-
-  confirmPasswordValidator(control: AbstractControl) {
-    return control.get('password')?.value === control.get('confirmPassword')?.value ?
-      null : { mismatch: true };
   }
 
   get f() {
@@ -59,10 +56,12 @@ export class RegisterComponent implements OnInit {
       .subscribe({
         next: response => {
           this.registerSuccess = true;
-          console.log('register confirm email url',response);
+          console.log('register confirm email url', response);
+          this.router.navigate(['/register-confirm-email']);
         },
         error: error => {
-          this.errorMessage = "An error occured creating your account";
+          this.errorMessage = "An error occurred creating your account";
+          this.toastreService.error("Sorry, there was an error creating your account");
           console.log(error);
         }
       });

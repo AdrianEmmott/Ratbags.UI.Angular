@@ -28,7 +28,7 @@ export class ArticlesComponent implements OnInit {
     this.articles$ = this.articlesService.getArticles(skip, this.pageSize);
 
     this.articles$.subscribe(pagedResult => {
-      console.log('Paged Result:', pagedResult);
+      console.log('pagedResult:', pagedResult);
     });
   }
 

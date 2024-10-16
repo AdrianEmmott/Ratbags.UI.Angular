@@ -1,1 +1,41 @@
-<p>resend-confirm-email works!</p>
+<div class="row justify-content-center mt-5">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">
+        <h3>Please confirm your email address</h3>
+      </div>
+      <div class="card-body">
+        <form class="w-100"
+              (ngSubmit)="onSubmit()"
+              [formGroup]="form">
+
+          <div class="row">
+            <div class="form-group col-sm-12">
+              <label for="email">Email</label>
+              <input type="email"
+                     class="form-control login-input"
+                     id="email"
+                     formControlName="email"
+                     placeholder="Enter email"
+                     [ngClass]="{ 'is-invalid': submitted && f['email'].errors }" />
+              <div *ngIf="submitted && f['email'].errors" class="invalid-feedback">
+                <div *ngIf="f['email'].errors['required']">Email is required</div>
+                <div *ngIf="f['email'].errors['email']">Invalid email format</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-sm-12 text-end">
+              <div class="">
+                <button type="submit" class="btn btn-primary btn-block" [disabled]="!form.valid">Resend email</button>
+              </div>
+            </div>
+          </div>
+          
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
