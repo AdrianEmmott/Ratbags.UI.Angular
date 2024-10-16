@@ -1,7 +1,7 @@
 <div class="mt-5">
   <div class="row">
-    <ng-container *ngIf="articles$ | async as articles; else loading">
-      <div class="col-md-4 col-sm-6 mb-4" *ngFor="let article of (articles$ | async)">
+    <ng-container *ngIf="articles$ | async as pagedResult; else loading">
+      <div class="col-md-4 col-sm-6 mb-4" *ngFor="let article of pagedResult.items">
         <div class="card h-300">
           <img src="assets/images/Mercedes-AMG1.jpg" class="card-img-top " alt="{{ article.title }}" />
           <div class="card-body">
@@ -12,6 +12,12 @@
           </div>
         </div>
       </div>
+
+      <!-- pagination -->
+      <ngb-pagination [(page)]="pagedResult.currentPage"
+                      [pageSize]="pagedResult.pageSize"
+                      [collectionSize]="pagedResult.totalCount"
+                      (pageChange)="pageChange($event)"/>
     </ng-container>
 
     <ng-template #loading>

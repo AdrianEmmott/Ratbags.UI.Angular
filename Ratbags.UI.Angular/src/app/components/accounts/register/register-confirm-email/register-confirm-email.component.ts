@@ -17,9 +17,6 @@ export class RegisterConfirmEmailComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log('// simple call to service...');
-
-    // simple call to service
     this.route.paramMap
       .pipe(
         switchMap(params => { // switchMap over mergeMap in case the user clicks the link multiple times...

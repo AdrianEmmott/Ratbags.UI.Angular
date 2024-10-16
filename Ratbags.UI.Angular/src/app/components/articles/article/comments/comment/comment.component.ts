@@ -8,6 +8,7 @@ import { ComemntsService } from '../../../../../services/comments.service';
 
 // icons
 import { faCommentAlt } from '@fortawesome/free-regular-svg-icons';
+import { ToastrService } from 'ngx-toastr';
 
 
 @Component({
@@ -21,13 +22,15 @@ export class CommentComponent implements OnInit {
   @Output() getComments = new EventEmitter<void>();
 
   form?: FormGroup;
-  
+
   // icons
   faCommentAlt = faCommentAlt;
 
-  constructor(public router: Router,
-              private formBuilder: FormBuilder,
-              private commentsService: ComemntsService) { }
+  constructor(
+    public router: Router,
+    private formBuilder: FormBuilder,
+    private commentsService: ComemntsService,
+    private toastrService: ToastrService) { }
 
   ngOnInit() {
     this.setupForm();
@@ -53,15 +56,17 @@ export class CommentComponent implements OnInit {
       };
 
       this.commentsService.create(comment)
-        .subscribe({
-          next:
-            result => {
-              this.getComments.emit();
-            },
-          error: error => {
-            console.error('error adding comment:', error);
+        .subscribe(
+          {
+            next:
+              result => {
+                this.getComments.emit();
+              },
+            error: error => {
+              console.error('error adding comment:', error);
+              this.toastrService.error(`Sorry, there was an error adding your comment`);
+            }
           }
-        }
         );
     }
   }
