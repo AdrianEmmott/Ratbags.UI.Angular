@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { AppConfigService } from './app-config.service';
 
 import { Article } from '../interfaces/article';
+import { ArticleListItem } from '../interfaces/articleListItem';
 import { PagedResult } from '../interfaces/paged-result';
 
 @Injectable({
@@ -25,8 +26,8 @@ export class ArticlesService {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
 
-  getArticles(skip: number, take: number): Observable<PagedResult<Article>> {
-    return this.http.get<PagedResult<Article>>(`${this.apiUrl}/${skip}/${take}`);
+  getArticles(skip: number, take: number): Observable<PagedResult<ArticleListItem>> {
+    return this.http.get<PagedResult<ArticleListItem>>(`${this.apiUrl}/${skip}/${take}`);
   }
 
   getArticle(id: string): Observable<Article> {

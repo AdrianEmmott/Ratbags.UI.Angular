@@ -159,4 +159,8 @@ export class ArticleComponent implements OnInit {
         });
     }
   }
+
+  bannerImageSelect(event: any) {
+    console.log(event.target.files[0]);
+  }
 }

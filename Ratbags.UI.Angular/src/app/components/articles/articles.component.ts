@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-
-import { Article } from '../../interfaces/article';
-import { ArticlesService } from '../../services/articles.service';
 import { Observable } from 'rxjs';
+
+import { ArticleListItem } from '../../interfaces/articleListItem';
 import { PagedResult } from '../../interfaces/paged-result';
+import { ArticlesService } from '../../services/articles.service';
+
+import { faComments } from '@fortawesome/free-regular-svg-icons';
 
 @Component({
   selector: 'app-articles',
@@ -11,10 +13,13 @@ import { PagedResult } from '../../interfaces/paged-result';
   styleUrl: './articles.component.scss'
 })
 export class ArticlesComponent implements OnInit {
-  articles$!: Observable<PagedResult<Article>>;
+  articles$!: Observable<PagedResult<ArticleListItem>>;
   currentPage: number = 1;
   pageSize: number = 6; // TODO pull from local storage
   initialised: boolean = false;
+
+  // icons
+  faComments = faComments;
 
   constructor(public articlesService: ArticlesService) { }
 

@@ -10,9 +10,9 @@
       </header>
 
       <!-- build an image api to return blob -->
-      <img src="assets/images/Mercedes-AMG1.jpg"
+      <!--<img src="assets/images/Mercedes-AMG1.jpg"
            class="img-fluid rounded mb-4 w-100"
-           alt="{{ article.title }}" />
+           alt="{{ article.title }}" />-->
 
       <section class="content">
         <div [innerHTML]="article.content"></div>
@@ -54,6 +54,12 @@
       <div class="form-group">
         <label for="title" class="fw-bold">Title</label>
         <input type="text" class="form-control" id="title" placeholder="Article title" formControlName="title" />
+      </div>
+
+      <!-- banner image-->
+      <div class="mt-2 mb-2">
+        <label for="bannerImageSelector">Select a banner image</label>
+        <input type="file" id="bannerImageSelector" (change)="bannerImageSelect($event)" />
       </div>
 
       <app-content-editor [contentControl]="$any(form.get('content'))"></app-content-editor>
