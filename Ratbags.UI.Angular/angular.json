@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "articles.ui.angular": {
+    "ratbags.ui.angular": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -24,7 +24,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/articles.ui.angular",
+            "outputPath": "dist/ratbags.ui.angular",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -58,13 +58,13 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumWarning": "2mb",
+                  "maximumError": "4MB"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kB",
-                  "maximumError": "4kB"
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
                 }
               ],
               "outputHashing": "all",
@@ -87,10 +87,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "articles.ui.angular:build:production"
+              "buildTarget": "ratbags.ui.angular:build:production"
             },
             "development": {
-              "buildTarget": "articles.ui.angular:build:development"
+              "buildTarget": "ratbags.ui.angular:build:development"
             }
           },
           "defaultConfiguration": "development",
