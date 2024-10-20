@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { of, switchMap } from 'rxjs';
-import { AccountsRegisterService } from '../../../../services/account/accounts-register.service';
+import { RegisterService } from '../../../../services/account/register.service';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
@@ -16,7 +16,7 @@ export class RegisterConfirmEmailComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private toastrService: ToastrService,
-    private registerService: AccountsRegisterService) {
+    private registerService: RegisterService) {
   }
 
   ngOnInit() {

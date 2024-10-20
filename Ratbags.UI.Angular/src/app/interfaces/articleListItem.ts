@@ -4,7 +4,7 @@ export interface ArticleListItem {
   id: string;
   title: string;
   description: string;
-  imageUrl: string;
+  thumbnailImageUrl: string;
   commentCount: number;
   published: Date;
 }

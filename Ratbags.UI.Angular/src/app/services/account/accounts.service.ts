@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { jwtDecode } from 'jwt-decode';
+import { JwtPayload, jwtDecode } from 'jwt-decode';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 
@@ -22,15 +22,15 @@ export class AccountsService {
     private router: Router,
     private appConfigService: AppConfigService) { }
 
-  decodeToken(): boolean {
+  decodeToken(): JwtPayload | null {
     const token = localStorage.getItem('jwtToken');
 
     if (!token) {
-      return false;
+      return null;
     }
 
     const decodedToken: any = jwtDecode(token);
-    console.log('validateTokenLocally decodedToken', decodedToken);
+    console.log('decodeToken decodedToken', decodedToken);
     const currentTime = Math.floor(new Date().getTime() / 1000);
 
     // expired?
@@ -38,11 +38,21 @@ export class AccountsService {
 
     if (!validToken) {
       this.removeToken();
+      return null;
     }
 
-    console.log('validateTokenLocally validToken', validToken);
+    return decodedToken;
+  }
 
-    return validToken;
+  get userId(): string | undefined {
+    const token = this.decodeToken();
+    if (token) {
+      const id = token.sub;
+
+      return id;
+    }
+
+    return undefined;
   }
 
   // validate token on server

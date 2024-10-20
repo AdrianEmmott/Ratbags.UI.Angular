@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
-import { AccountsRegisterService } from '../../../services/account/accounts-register.service';
+import { RegisterService } from '../../../services/account/register.service';
 
 import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
 
@@ -27,9 +27,11 @@ export class RegisterComponent implements OnInit {
     private router: Router,
     private formBuilder: FormBuilder,
     private toastreService: ToastrService,
-    private registerService: AccountsRegisterService) {
+    private registerService: RegisterService) {
     this.form = new FormGroup(
       {
+        firstName: new FormControl('', [Validators.required]),
+        lastName: new FormControl('', [Validators.required]),
         email: new FormControl('', [Validators.required, Validators.email]),
         // password / confirm password controls/validation added by passwordConfirmation component
       }
@@ -52,7 +54,11 @@ export class RegisterComponent implements OnInit {
     }
 
     this.registerService
-      .register(this.f['email'].value, this.f['password'].value)
+      .register(
+        this.f['firstName'].value,
+        this.f['lastName'].value,
+        this.f['email'].value,
+        this.f['password'].value)
       .subscribe({
         next: response => {
           this.registerSuccess = true;

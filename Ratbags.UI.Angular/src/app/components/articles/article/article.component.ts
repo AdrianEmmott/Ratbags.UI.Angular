@@ -67,12 +67,16 @@ export class ArticleComponent implements OnInit {
             id: result.id,
             title: result.title,
             content: result.content,
+            bannerImageUrl: result.bannerImageUrl,
             created: result.created,
             updated: result.updated,
             publishDate: result.publishDate,
             comments: result.comments,
-            userId: result.userId
+            userId: result.userId,
+            authorName: result.authorName
           }
+
+          console.log('article', this.article);
         }
       });
   }

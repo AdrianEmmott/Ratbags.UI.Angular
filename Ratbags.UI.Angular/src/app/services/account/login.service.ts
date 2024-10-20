@@ -10,7 +10,7 @@ import { AccountsService } from './accounts.service';
 @Injectable({
   providedIn: 'root'
 })
-export class AccountsLoginService {
+export class LoginService {
   private apiUrl = `${this.appConfigService.apiBaseUrl}/api/accounts/login`;
 
   // nosey sods and blabber-mouths
@@ -29,6 +29,8 @@ export class AccountsLoginService {
           (response) => {
             if (response && response.token) {
               this.accountsService.storeToken(response);
+
+              this.accountsService.decodeToken();
 
               this.accountsService.validateToken();
             }

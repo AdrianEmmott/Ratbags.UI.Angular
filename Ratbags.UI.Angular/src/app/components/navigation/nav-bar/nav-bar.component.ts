@@ -3,7 +3,7 @@ import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { filter } from 'rxjs';
 
-import { AccountsLoginService } from '../../../services/account/accounts-login.service';
+import { LoginService } from '../../../services/account/login.service';
 import { ThemesService } from '../../../services/themes.service';
 
 // icons
@@ -30,7 +30,7 @@ export class NavBarComponent implements OnInit {
   constructor(public router: Router,
     public route: ActivatedRoute,
     public accountsService: AccountsService,
-    private accountsLoginService: AccountsLoginService,
+    private loginService: LoginService,
     public themesService: ThemesService,
     private toastr: ToastrService) {
     // hide login if we're at /login
@@ -51,6 +51,6 @@ export class NavBarComponent implements OnInit {
   }
   
   logout() {
-    this.accountsLoginService.logout();
+    this.loginService.logout();
   }
 }

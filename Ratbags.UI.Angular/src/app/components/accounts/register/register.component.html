@@ -8,6 +8,38 @@
         <form class="w-100"
               [formGroup]="form"
               (ngSubmit)="onSubmit()">
+
+          <!-- first nme-->
+          <div class="form-group">
+            <label for="firstName">First name</label>
+            <input type="text"
+                   class="form-control"
+                   id="firstName"
+                   formControlName="firstName"
+                   placeholder="Enter first name"
+                   [ngClass]="{ 'is-invalid': f['firstName'].errors && f['firstName'].touched}" />
+            <div class="invalid-feedback"
+                 *ngIf="f['firstName'].errors && f['firstName'].touched">
+              <div *ngIf="f['firstName'].errors['required']">First name is required</div>
+            </div>
+          </div>
+
+          <!-- last name-->
+          <div class="form-group">
+            <label for="firstName">Last name</label>
+            <input type="text"
+                   class="form-control"
+                   id="lastName"
+                   formControlName="lastName"
+                   placeholder="Enter last name"
+                   [ngClass]="{ 'is-invalid': f['lastName'].errors && f['lastName'].touched}" />
+            <div class="invalid-feedback"
+                 *ngIf="f['lastName'].errors && f['lastName'].touched" >
+              <div *ngIf="f['lastName'].errors['required']">Last name is required</div>
+            </div>
+          </div>
+
+          <!-- email -->
           <div class="form-group">
             <label for="email">Email</label>
             <input type="text"
@@ -22,11 +54,7 @@
             </div>
           </div>
 
-          <!--<app-password-confirmation [formGroupControl]="form"
-                                     [passwordControl]="$any(form.get('password'))"
-                                     [confirmPasswordControl]="$any(form.get('confirmPassword'))">
-          </app-password-confirmation>-->
-
+          <!-- password and confirm password -->
           <app-password-confirmation (formReady)="onPasswordFormReady($event)">
           </app-password-confirmation>
 
@@ -35,10 +63,11 @@
               Already have an account? <a [routerLink]="['/login']">Login</a>
             </div>
             <div class="col-sm-6 text-end">
-              <button type="submit" class="btn btn-primary btn-block" [disabled]="!form.valid">Register</button>
+              <button type="submit"
+                      class="btn btn-primary btn-block"
+                      [disabled]="!form.valid">Register</button>
             </div>
           </div>
-
 
           <div class="mt-2">
             <p>Or sign in with:</p>

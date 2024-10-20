@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AccountsRegisterService } from '../../../../services/account/accounts-register.service';
+import { RegisterService } from '../../../../services/account/register.service';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
@@ -20,7 +20,7 @@ export class ResendRegisterConfirmEmailComponent implements OnInit {
   constructor(
     private router: Router,
     private toastrService: ToastrService,
-    private registerService: AccountsRegisterService
+    private registerService: RegisterService
   ) {
     this.form = new FormGroup({
       email: new FormControl('', [Validators.required, Validators.email])

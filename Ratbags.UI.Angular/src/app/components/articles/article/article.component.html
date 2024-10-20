@@ -4,15 +4,16 @@
       <header class="mb-4">
         <h1 class="display-4">{{ article.title }}</h1>
         <p class="text-muted">
-          By author | {{ article.created | date : 'dd/MM/yyyy HH:mm' }}{{ article.updated ? ', (updated ' + (article.updated | date : 'dd/MM/yyyy HH:mm') + ')': '' }}
+          By {{ article.authorName }} | {{ article.created | date : 'dd/MM/yyyy HH:mm' }}{{ article.updated ? ', (updated ' + (article.updated | date : 'dd/MM/yyyy HH:mm') + ')': '' }}
           <fa-icon [icon]="faCoffee"></fa-icon>
         </p>
       </header>
 
-      <!-- build an image api to return blob -->
-      <!--<img src="assets/images/Mercedes-AMG1.jpg"
-           class="img-fluid rounded mb-4 w-100"
-           alt="{{ article.title }}" />-->
+      <!-- image api returns file -->
+      <img *ngIf="article.bannerImageUrl"
+           [src]="'https://localhost:5001/api/images/' + article.bannerImageUrl"
+           class="img-fluid mb-4 w-100 image-fixed"
+           alt="{{ article.title }}" />
 
       <section class="content">
         <div [innerHTML]="article.content"></div>

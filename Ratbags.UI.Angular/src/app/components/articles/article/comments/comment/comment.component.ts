@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { Article } from '../../../../../interfaces/article';
@@ -9,6 +9,7 @@ import { ComemntsService } from '../../../../../services/comments.service';
 // icons
 import { faCommentAlt } from '@fortawesome/free-regular-svg-icons';
 import { ToastrService } from 'ngx-toastr';
+import { AccountsService } from '../../../../../services/account/accounts.service';
 
 
 @Component({
@@ -21,6 +22,8 @@ export class CommentComponent implements OnInit {
   @Input() isLoggedIn: boolean = false;
   @Output() getComments = new EventEmitter<void>();
 
+  commenterUserId: string | undefined;
+
   form?: FormGroup;
 
   // icons
@@ -30,29 +33,35 @@ export class CommentComponent implements OnInit {
     public router: Router,
     private formBuilder: FormBuilder,
     private commentsService: ComemntsService,
-    private toastrService: ToastrService) { }
+    private toastrService: ToastrService,
+    private accountsService: AccountsService) { }
 
   ngOnInit() {
     this.setupForm();
+
+    const decodedToken = this.accountsService.decodeToken();
+
+    if (decodedToken) {
+      this.commenterUserId = this.accountsService.userId ?? undefined;
+    }
   }
 
   setupForm() {
     if (this.article && this.article.id.length > 0) {
-      this.form = this.formBuilder.group({
-        articleId: [this.article?.id],
-        name: ['', [Validators.required]],
-        comment: ['', [Validators.required]]
+      this.form = new FormGroup({
+        articleId: new FormControl (this.article?.id),
+        comment: new FormControl ('', [Validators.required])
       });
     }
   }
 
   addComment() {
-    if (this.article && this.form) {
+    if (this.article && this.form && this.commenterUserId) {
       let comment: Comment = {
         articleId: this.article.id,
         content: this.form.controls['comment'].value,
         published: new Date().toISOString(),
-        userId: "b9fb9865-34a9-4981-8d6a-0f4c1ee4be37" // just for now...
+        userId: this.commenterUserId
       };
 
       this.commentsService.create(comment)

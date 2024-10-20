@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { AccountsLoginService } from '../../../services/account/accounts-login.service';
+import { LoginService } from '../../../services/account/login.service';
 
 import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
 import { ExternalSigninService } from '../../../services/account/external-signin.service';
@@ -36,7 +36,7 @@ export class LoginComponent implements OnInit {
 
   constructor(
     private formBuilder: FormBuilder,
-    private loginService: AccountsLoginService,
+    private loginService: LoginService,
     private externalSigninService: ExternalSigninService,
     private router: Router,
     private route: ActivatedRoute,

@@ -10,7 +10,7 @@ import { AccountsService } from './accounts.service';
 @Injectable({
   providedIn: 'root'
 })
-export class AccountsRegisterService extends BaseService {
+export class RegisterService extends BaseService {
   private apiUrl = `${this.appConfigService.apiBaseUrl}/api/accounts/register`;
 
   constructor(
@@ -21,12 +21,12 @@ export class AccountsRegisterService extends BaseService {
     super();
   }
 
-  register(email: string, password: string): Observable<any> {
-    if (!email || !password) {
-      return throwError(() => new Error('email and password are required'));
+  register(firstName: string, lastName: string, email: string, password: string): Observable<any> {
+    if (!firstName || !lastName || !email || !password) {
+      return throwError(() => new Error('first name / last name, email and password are required'));
     }
 
-    return this.http.post<any>(`${this.apiUrl}`, { email, password })
+    return this.http.post<any>(`${this.apiUrl}`, { firstName, lastName, email, password })
       .pipe(
         map(
           (response) => {

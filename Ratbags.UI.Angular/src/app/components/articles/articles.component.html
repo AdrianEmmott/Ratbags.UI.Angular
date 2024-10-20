@@ -3,8 +3,11 @@
     <ng-container *ngIf="articles$ | async as pagedResult; else loading">
       <div class="col-md-4 col-sm-6 mb-4" *ngFor="let article of pagedResult.items">
         <div class="card">
-          <div class="card-img-top">
-            <img src="assets/images/Mercedes-AMG1.jpg" class="card-img-top " alt="{{ article.title }}" />
+          <div class="card-img-top h-100">
+            <img class="card-img-top image-fixed"
+                 alt="{{ article.title }}"
+                 [src]="article.thumbnailImageUrl ? 'https://localhost:5001/api/images/' + article.thumbnailImageUrl : 'https://localhost:5001/api/images/ratbags.jpg'" />
+
           </div>
           <div class="card-body">
             <h5 class="card-title small">
@@ -13,8 +16,8 @@
             <p class="card-text small">{{ article.description }}</p>
           </div>
           <div class="card-footer text-muted d-flex align-content-center">
-            <p class="text-start col-sm-6">{{ article.published | date: 'dd/MM/yyyy'}}</p>
-            <p class="text-end col-sm-6 "><fa-icon [icon]="faComments"></fa-icon> {{article.commentCount}}</p>
+            <p class="text-start col-sm-6 mb-0" >{{ article.published | date: 'dd/MM/yyyy'}}</p>
+            <p class="text-end col-sm-6 mb-0"><fa-icon [icon]="faComments"></fa-icon> {{article.commentCount}}</p>
           </div>
         </div>
       </div>
