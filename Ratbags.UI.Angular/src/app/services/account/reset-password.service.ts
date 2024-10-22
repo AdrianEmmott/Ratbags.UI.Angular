@@ -12,9 +12,6 @@ import { AppConfigService } from '../app-config.service';
 export class ResetPasswordService {
   private apiUrl = `${this.appConfigService.apiBaseUrl}/api/accounts/reset-password`;
 
-  private tokenValidSubject = new BehaviorSubject<boolean>(false);
-  validateToken$ = this.tokenValidSubject.asObservable();
-
   constructor(private http: HttpClient,
     private appConfigService: AppConfigService) { }
 

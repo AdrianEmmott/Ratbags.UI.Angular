@@ -2,12 +2,13 @@
   <div class="row">
     <ng-container *ngIf="articles$ | async as pagedResult; else loading">
       <div class="col-md-4 col-sm-6 mb-4" *ngFor="let article of pagedResult.items">
-        <div class="card">
-          <div class="card-img-top h-100">
-            <img class="card-img-top image-fixed"
+        <div class="card rounded-0">
+          <div class="card-img-top" >
+            <img class="card-img-top image-fixed rounded-0"
+                 
                  alt="{{ article.title }}"
-                 [src]="article.thumbnailImageUrl ? 'https://localhost:5001/api/images/' + article.thumbnailImageUrl : 'https://localhost:5001/api/images/ratbags.jpg'" />
-
+                 [src]="article.imgSrc"
+                 />
           </div>
           <div class="card-body">
             <h5 class="card-title small">
@@ -42,9 +43,4 @@
       </div>
     </ng-template>
   </div>
-
-  <!-- editor -->
-  <section class="mt-5" id="editor-section">
-    <a class="btn btn-outline-primary" [routerLink]="['/articles/new']">Create article</a>
-  </section>
 </div>

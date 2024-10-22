@@ -1,5 +1,6 @@
-<div class="mt-5" *ngIf="form && isLoggedIn">
-  <form [formGroup]="form">
+<ng-container *ngIf="form && isLoggedIn">
+  <form class="mt-5"
+        [formGroup]="form">
     <p>
       <fa-icon [icon]="faCommentAlt" class="me-2"></fa-icon>
       <strong *ngIf="isLoggedIn">Add a comment</strong>
@@ -16,10 +17,9 @@
               *ngIf="isLoggedIn">
         Add comment
       </button>
-
     </div>
   </form>
-</div>
+</ng-container>
 <div class="mt-5" *ngIf="!isLoggedIn">
   <a [routerLink]="['/login']" [queryParams]="{ returnUrl: router.url }">
     Login to comment

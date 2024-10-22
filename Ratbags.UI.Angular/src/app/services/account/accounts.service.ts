@@ -30,7 +30,7 @@ export class AccountsService {
     }
 
     const decodedToken: any = jwtDecode(token);
-    console.log('decodeToken decodedToken', decodedToken);
+    //console.log('decodeToken decodedToken', decodedToken);
     const currentTime = Math.floor(new Date().getTime() / 1000);
 
     // expired?

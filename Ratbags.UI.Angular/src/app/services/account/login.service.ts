@@ -13,10 +13,6 @@ import { AccountsService } from './accounts.service';
 export class LoginService {
   private apiUrl = `${this.appConfigService.apiBaseUrl}/api/accounts/login`;
 
-  // nosey sods and blabber-mouths
-  private tokenValidSubject = new BehaviorSubject<boolean>(false);
-  validateToken$ = this.tokenValidSubject.asObservable();
-
   constructor(private http: HttpClient,
     private router: Router,
     private appConfigService: AppConfigService,

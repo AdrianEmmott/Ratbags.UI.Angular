@@ -1,6 +1,6 @@
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 
 import { AppConfigService } from './app-config.service';
 
@@ -13,6 +13,10 @@ import { PagedResult } from '../interfaces/paged-result';
 })
 export class ArticlesService {
   private apiUrl = `${this.appConfigService.apiBaseUrl}/api/articles`;
+
+  // nosey sods and blabber-mouths
+  private editArticleSubject = new BehaviorSubject<boolean>(false);
+  editArticle$ = this.editArticleSubject.asObservable();
 
   constructor(private http: HttpClient,
     private appConfigService: AppConfigService) {
@@ -36,5 +40,12 @@ export class ArticlesService {
 
   update(article: Article): Observable<any> {
     return this.http.put(`${this.apiUrl}`, article);
+  }
+
+  editRequest() {
+    this.editArticleSubject.next(true);
+  }
+  editFinished() {
+    this.editArticleSubject.next(false);
   }
 }

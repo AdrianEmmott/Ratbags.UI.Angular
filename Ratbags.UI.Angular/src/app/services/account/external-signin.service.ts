@@ -15,10 +15,6 @@ import { TokenWrapper } from '../../interfaces/token-wrapper';
 export class ExternalSigninService {
   private apiUrl = `${this.appConfigService.apiBaseUrl}/api/accounts/external-authentication`;
 
-  // nosey sods and blabber-mouths
-  private tokenValidSubject = new BehaviorSubject<boolean>(false);
-  validateToken$ = this.tokenValidSubject.asObservable();
-
   constructor(private http: HttpClient,
     private router: Router,
     private appConfigService: AppConfigService,

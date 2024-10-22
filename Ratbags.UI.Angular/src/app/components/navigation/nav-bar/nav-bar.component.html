@@ -22,25 +22,36 @@
           <a class="nav-link"
              routerLinkActive="active"
              ariaCurrentWhenActive="page"
-             [routerLink]="['/login']">
+             [routerLink]="['/about']">
             About
           </a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link"
-             routerLinkActive="active"
-             ariaCurrentWhenActive="page"
-             [routerLink]="['/home']">
-            Contact
-          </a>
-        </li>
-        <li class="nav-item dropdown">
+        <!-- editor -->
+        <li class="nav-item dropdown" *ngIf="(isLoggedIn$ | async) && (onArticlesPage || onArticlePage)">
           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Dropdown
+            Editor
           </a>
           <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <li><a class="dropdown-item" [routerLink]="['/articles']">Action</a></li>
-            <li><a class="dropdown-item" [routerLink]="['/home']">Another action</a></li>
+            <li>
+              <a class="dropdown-item edit-article"
+                 routerLinkActive="active"
+                 ariaCurrentWhenActive="page"
+                 [class.disabled]="!onArticlesPage"
+                 [routerLink]="['/articles/new']">
+                Create article
+              </a>
+            </li>
+
+            <li>
+              <a class="dropdown-item edit-article"
+                 routerLinkActive="active"
+                 ariaCurrentWhenActive="page"
+                 [class.disabled]="!onArticlePage"
+                 (click)="editArticle()">
+                Edit this article
+              </a>
+            </li>
+
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" [routerLink]="['/login']">Something else here</a></li>
           </ul>
@@ -57,7 +68,8 @@
       </form>
 
       <!-- login -->
-      <div class="nav-item ms-md-3 text-end mt-3 mt-sm-0 mt-lg-0" ngbDropdown id="navbar-dropdown-login"
+      <div class="nav-item ms-md-3 text-end mt-3 mt-sm-0 mt-lg-0"
+           ngbDropdown id="navbar-dropdown-login"
            *ngIf="!(isLoggedIn$ | async) && !onLoginPage">
         <a class="nav-link" tabindex="0" ngbDropdownToggle role="button"> Login </a>
         <div ngbDropdownMenu class="dropdown-menu dropdown-menu-end pt-3" aria-labelledby="login-dropdown" id="login-dropdown">
@@ -75,7 +87,8 @@
       </div>
 
       <!-- logout -->
-      <div class="nav-item ms-md-3" *ngIf="(isLoggedIn$ | async) && !onLoginPage">
+      <div class="nav-item ms-md-3"
+           *ngIf="(isLoggedIn$ | async) && !onLoginPage">
         <a [routerLink]="['/']"
            class="nav-link"
            tabindex="5"

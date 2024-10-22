@@ -3,15 +3,16 @@
     <article>
       <header class="mb-4">
         <h1 class="display-4">{{ article.title }}</h1>
+        <p class="fs-5 mt-4" *ngIf="article.introduction">{{ article.introduction }}</p>
         <p class="text-muted">
-          By {{ article.authorName }} | {{ article.created | date : 'dd/MM/yyyy HH:mm' }}{{ article.updated ? ', (updated ' + (article.updated | date : 'dd/MM/yyyy HH:mm') + ')': '' }}
+          {{ article.authorName }} | {{ article.created | date : 'dd/MM/yyyy HH:mm' }} {{ article.updated ? '(updated ' + (article.updated | date : 'dd/MM/yyyy HH:mm') + ')': '' }}
           <fa-icon [icon]="faCoffee"></fa-icon>
         </p>
       </header>
 
-      <!-- image api returns file -->
-      <img *ngIf="article.bannerImageUrl"
-           [src]="'https://localhost:5001/api/images/' + article.bannerImageUrl"
+      <!-- banner image -->
+      <img *ngIf="bannerImageUrl"
+           [src]="bannerImageUrl"
            class="img-fluid mb-4 w-100 image-fixed"
            alt="{{ article.title }}" />
 
@@ -25,43 +26,63 @@
                   [isLoggedIn]="(isLoggedIn$ | async) ?? false">
     </app-comments>
 
+    <!-- footer -->
     <footer class="mt-5">
       <h5>About the Author</h5>
-      <p>author</p>
+      <p>{{ article.authorName }}</p>
 
-      <!-- editor button -->
-      <section class="mt-3 mb-5">
-        <a class="btn btn-sm btn-outline-success me-2"
-           [routerLink]="['/login']"
-           [queryParams]="{ returnUrl: router.url }"
-           *ngIf="!(isLoggedIn$ | async) ?? false">
-          Login to edit article
-        </a>
-        <button class="btn btn-sm btn-outline-success me-2"
-                (click)="edit()"
-                *ngIf="(isLoggedIn$ | async) ?? false">
-          edit
-        </button>
-
+      <!-- footer stuff -->
+      <div class="mt-3 mb-5">
         <a class="me-2" [routerLink]="['/articles']">back to articles</a>
-      </section>
+      </div>
     </footer>
   </section>
 
 
-  <!-- editor -->
-  <section *ngIf="showEditor">
+  <!-- editor -probably should be in its own component -->
+  <section *ngIf="(isLoggedIn$ | async) && showEditor">
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
       <div class="form-group">
         <label for="title" class="fw-bold">Title</label>
         <input type="text" class="form-control" id="title" placeholder="Article title" formControlName="title" />
       </div>
 
+      <div class="form-group">
+        <label for="description" class="fw-bold">Description - tag line</label>
+        <input type="text"
+               class="form-control"
+               id="description"
+               placeholder="Descripion is a tag line which appears in summary pages"
+               formControlName="description" />
+      </div>
+
+      <div class="form-group">
+        <label for="introduction" class="fw-bold">Intro</label>
+        <textarea type="text"
+               class="form-control"
+               id="introduction"
+               placeholder="Introduction appears in the article, above the image"
+               formControlName="introduction"></textarea>
+      </div>
+
+      <hr />
+
       <!-- banner image-->
       <div class="mt-2 mb-2">
-        <label for="bannerImageSelector">Select a banner image</label>
-        <input type="file" id="bannerImageSelector" (change)="bannerImageSelect($event)" />
+        <label for="bannerImageSelector" class="fw-bold">Select a banner image</label>
+        <div class="justify-content-start">
+          <input type="file" id="bannerImageSelector" (change)="bannerImageSelect($event)" />
+          <button class="btn btn-secondary" (click)="uploadBannerImage()" [disabled]="!bannerImage">Upload image</button>
+        </div>
+        <div class="justify-content-end">
+          <img class="w-25 text-end"
+               [src]="bannerImageUrl"
+               *ngIf="bannerImageUrl"
+               alt="article banner image" />
+        </div>
       </div>
+
+      <hr />
 
       <app-content-editor [contentControl]="$any(form.get('content'))"></app-content-editor>
 

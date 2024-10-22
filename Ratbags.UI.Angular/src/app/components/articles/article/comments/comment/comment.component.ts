@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 
 import { Article } from '../../../../../interfaces/article';
 import { Comment } from '../../../../../interfaces/comment';
-import { ComemntsService } from '../../../../../services/comments.service';
+import { CommentsService } from '../../../../../services/comments.service';
 
 // icons
 import { faCommentAlt } from '@fortawesome/free-regular-svg-icons';
@@ -32,7 +32,7 @@ export class CommentComponent implements OnInit {
   constructor(
     public router: Router,
     private formBuilder: FormBuilder,
-    private commentsService: ComemntsService,
+    private commentsService: CommentsService,
     private toastrService: ToastrService,
     private accountsService: AccountsService) { }
 

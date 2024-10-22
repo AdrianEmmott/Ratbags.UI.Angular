@@ -11,6 +11,7 @@ import { ResetPasswordUpdateComponent } from './components/accounts/reset-passwo
 import { ArticleComponent } from './components/articles/article/article.component';
 import { ArticlesComponent } from './components/articles/articles.component';
 import { HomeComponent } from './components/home/home.component';
+import { AboutComponent } from './components/about/about.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent }, // Default route
@@ -28,7 +29,9 @@ const routes: Routes = [
   { path: 'login-trouble', component: LoginTroubleComponent },
   
   { path: 'external-sign-in-callback/:providerName', component: ExternalSigninCallbackComponent },
- 
+
+  { path: 'about', component: AboutComponent },
+
   { path: 'articles', component: ArticlesComponent },
   { path: 'articles/new', component: ArticleComponent },
   { path: 'articles/:id', component: ArticleComponent }

@@ -1,92 +1,92 @@
-<div class="row justify-content-center mt-5">
-  <div class="col-md-6">
+<div class="row d-flex justify-content-center mt-5  g-3">
+  <div class="col-md-9">
     <div class="card">
       <div class="card-header">
         <h3>{{ registerSuccess ? 'Please confirm your email address' : 'Register' }}</h3>
       </div>
       <div class="card-body" *ngIf="!registerSuccess">
-        <form class="w-100"
-              [formGroup]="form"
-              (ngSubmit)="onSubmit()">
+        <form class="w-100" [formGroup]="form" (ngSubmit)="onSubmit()">
+          
+          <!-- first name and last name side by side -->
+          <div class="row g-3">
+            <!-- email -->
+            <div class="form-group col-sm-4">
+              <label for="email">Email</label>
+              <input type="text"
+                     class="form-control login-input"
+                     id="email"
+                     formControlName="email"
+                     placeholder="Enter email"
+                     [ngClass]="{ 'is-invalid': f['email'].errors && f['email'].touched}" />
+              <div *ngIf="f['email'].errors && f['email'].touched" class="invalid-feedback">
+                <div *ngIf="f['email'].errors['required']">Email is required</div>
+                <div *ngIf="f['email'].errors['email']">Please enter a valid email - e.g. <i>joe&#64;bloggs.com</i></div>
+              </div>
+            </div>
 
-          <!-- first nme-->
-          <div class="form-group">
-            <label for="firstName">First name</label>
-            <input type="text"
-                   class="form-control"
-                   id="firstName"
-                   formControlName="firstName"
-                   placeholder="Enter first name"
-                   [ngClass]="{ 'is-invalid': f['firstName'].errors && f['firstName'].touched}" />
-            <div class="invalid-feedback"
-                 *ngIf="f['firstName'].errors && f['firstName'].touched">
-              <div *ngIf="f['firstName'].errors['required']">First name is required</div>
+            <div class="form-group col-sm-4 justify-content-start">
+              <label for="firstName">First name</label>
+              <input type="text"
+                     class="form-control"
+                     id="firstName"
+                     formControlName="firstName"
+                     placeholder="Enter first name"
+                     [ngClass]="{ 'is-invalid': f['firstName'].errors && f['firstName'].touched}" />
+              <div class="invalid-feedback"
+                   *ngIf="f['firstName'].errors && f['firstName'].touched">
+                <div *ngIf="f['firstName'].errors['required']">First name is required</div>
+              </div>
+            </div>
+
+            <div class="form-group col-sm-4 justify-content-end">
+              <label for="lastName">Last name</label>
+              <input type="text"
+                     class="form-control"
+                     id="lastName"
+                     formControlName="lastName"
+                     placeholder="Enter last name"
+                     [ngClass]="{ 'is-invalid': f['lastName'].errors && f['lastName'].touched}" />
+              <div class="invalid-feedback"
+                   *ngIf="f['lastName'].errors && f['lastName'].touched">
+                <div *ngIf="f['lastName'].errors['required']">Last name is required</div>
+              </div>
             </div>
           </div>
 
-          <!-- last name-->
-          <div class="form-group">
-            <label for="firstName">Last name</label>
-            <input type="text"
-                   class="form-control"
-                   id="lastName"
-                   formControlName="lastName"
-                   placeholder="Enter last name"
-                   [ngClass]="{ 'is-invalid': f['lastName'].errors && f['lastName'].touched}" />
-            <div class="invalid-feedback"
-                 *ngIf="f['lastName'].errors && f['lastName'].touched" >
-              <div *ngIf="f['lastName'].errors['required']">Last name is required</div>
-            </div>
-          </div>
-
-          <!-- email -->
-          <div class="form-group">
-            <label for="email">Email</label>
-            <input type="text"
-                   class="form-control login-input"
-                   id="email"
-                   formControlName="email"
-                   placeholder="Enter email"
-                   [ngClass]="{ 'is-invalid': f['email'].errors && f['email'].touched}" />
-            <div *ngIf="f['email'].errors && f['email'].touched" class=" invalid-feedback">
-              <div *ngIf="f['email'].errors['required']">Email is required</div>
-              <div *ngIf="f['email'].errors['email']">Please enter a valid email - e.g. <i>joe&#64;bloggs.com</i></div>
-            </div>
-          </div>
+          
 
           <!-- password and confirm password -->
           <app-password-confirmation (formReady)="onPasswordFormReady($event)">
           </app-password-confirmation>
 
+          <!-- Register and login links -->
           <div class="col-sm-12 d-flex align-items-center">
             <div class="col-sm-6 text-start pt-0 pb-2">
               Already have an account? <a [routerLink]="['/login']">Login</a>
             </div>
             <div class="col-sm-6 text-end">
-              <button type="submit"
-                      class="btn btn-primary btn-block"
-                      [disabled]="!form.valid">Register</button>
+              <button type="submit" class="btn btn-primary btn-block" [disabled]="!form.valid">Register</button>
             </div>
           </div>
 
-          <div class="mt-2">
-            <p>Or sign in with:</p>
-            <app-google-sign-in-button></app-google-sign-in-button>
-            <app-facebook-sign-in-button class="ms-2"></app-facebook-sign-in-button>
-            <div class="fb-login-button" data-width="" data-size="" data-button-type=""
-                 data-layout="" data-auto-logout-link="false" data-use-continue-as="false">
-            </div>
-          </div>
+         
 
           <div *ngIf="errorMessage" class="alert alert-danger mt-3">{{ errorMessage }}</div>
         </form>
-
       </div>
 
-      <div class="card-body"
-           *ngIf="registerSuccess">
+      <div class="card-body" *ngIf="registerSuccess">
         <p>Thanks for signing up! We've sent you an email - please click on the confirmation link to complete your registration</p>
       </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="mt-2 w-100">
+      <p>Or sign in with:</p>
+
+        <app-google-sign-in-button class="mb-2 external-sign-in-button"></app-google-sign-in-button>
+      
+      <app-facebook-sign-in-button></app-facebook-sign-in-button>
     </div>
   </div>
 </div>

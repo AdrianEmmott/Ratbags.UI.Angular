@@ -43,6 +43,7 @@ import { ImageUploadComponent } from './components/upload/image-upload/image-upl
 // services
 import { LoginTroubleComponent } from './components/accounts/login/login-trouble/login-trouble.component';
 import { AppConfigService } from './services/app-config.service';
+import { AboutComponent } from './components/about/about.component';
 
 
 
@@ -71,6 +72,7 @@ import { AppConfigService } from './services/app-config.service';
     LoginTroubleComponent,
     ResendRegisterConfirmEmailComponent,
     RegisterConfirmEmailComponent,
+    AboutComponent,
   ],
   imports: [
     BrowserModule,

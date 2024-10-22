@@ -5,6 +5,7 @@ export interface ArticleListItem {
   title: string;
   description: string;
   thumbnailImageUrl: string;
+  imgSrc: string | null;
   commentCount: number;
   published: Date;
 }

@@ -14,7 +14,7 @@
 
   <!-- comments -->
   <div #collapse="ngbCollapse" [(ngbCollapse)]="isCollapsed">
-    <section *ngFor="let comment of article.comments">
+    <ng-container *ngFor="let comment of article.comments">
       <div class="comment mt-4 mb-3">
         <div class="d-flex justify-content-between align-items-center">
           <p><strong>{{ comment.commenterName }}</strong></p>
@@ -26,7 +26,7 @@
         </div>
         <hr />
       </div>
-    </section>
+    </ng-container>
 
     <!-- add comment -->
     <app-comment [article]="article" [isLoggedIn]="isLoggedIn" (getComments)="getCommentsbyArticleId()"></app-comment>

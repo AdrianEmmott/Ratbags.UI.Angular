@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 
 import { Article } from '../../../../interfaces/article';
 import { Comment } from '../../../../interfaces/comment';
-import { ComemntsService } from '../../../../services/comments.service';
+import { CommentsService } from '../../../../services/comments.service';
 
 import { faComments, faMinusSquare, faPlusSquare } from '@fortawesome/free-regular-svg-icons';
 
@@ -26,7 +26,7 @@ export class CommentsComponent implements OnInit {
   faMinusSquare = faMinusSquare;
 
   constructor(public router: Router,
-    private commentsService: ComemntsService) { }
+    private commentsService: CommentsService) { }
 
   ngOnInit() {
   }

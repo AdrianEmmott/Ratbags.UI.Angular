@@ -8,7 +8,7 @@ import { Comment } from '../interfaces/comment';
 @Injectable({
   providedIn: 'root'
 })
-export class ComemntsService {
+export class CommentsService {
   private apiUrl = `${this.appConfigService.apiBaseUrl}/api/comments`;
 
   constructor(private http: HttpClient,

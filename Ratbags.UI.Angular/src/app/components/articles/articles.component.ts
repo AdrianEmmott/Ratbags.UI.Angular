@@ -1,11 +1,16 @@
-import { Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Observable, forkJoin, map, of, switchMap } from 'rxjs';
 
+import { Article } from '../../interfaces/article';
 import { ArticleListItem } from '../../interfaces/articleListItem';
 import { PagedResult } from '../../interfaces/paged-result';
 import { ArticlesService } from '../../services/articles.service';
+import { ImagesService } from '../../services/images.service';
 
+// icons
 import { faComments } from '@fortawesome/free-regular-svg-icons';
+import { DomSanitizer } from '@angular/platform-browser';
+
 
 @Component({
   selector: 'app-articles',
@@ -21,21 +26,62 @@ export class ArticlesComponent implements OnInit {
   // icons
   faComments = faComments;
 
-  constructor(public articlesService: ArticlesService) { }
+  constructor(
+    public articlesService: ArticlesService,
+    public imagesService: ImagesService,
+    private cd: ChangeDetectorRef,
+    private sanitizer: DomSanitizer,) { }
 
   ngOnInit() {
     this.loadArticles();
     this.initialised = true;
   }
 
+ 
   loadArticles() {
     const skip = (this.currentPage - 1) * this.pageSize;
-    this.articles$ = this.articlesService.getArticles(skip, this.pageSize);
 
-    this.articles$.subscribe(pagedResult => {
-      console.log('pagedResult:', pagedResult);
-    });
+    // TODO this is way too complicated - either move the image gets into the html call
+    // or handle it in articles api
+    this.articles$ = this.articlesService.getArticles(skip, this.pageSize)
+      .pipe(
+        switchMap(
+          (pagedResult: PagedResult<ArticleListItem>) => {
+            const articlesWithImages$ = pagedResult.items.map(
+              article => {
+
+                if (article.thumbnailImageUrl) {
+                  return this.imagesService
+                    .get(article.thumbnailImageUrl)
+                    .pipe(
+                      map(imageSrc => {
+                        //console.log(`returnUrl for article '${article.title}'`, imageSrc);
+                        article.imgSrc = imageSrc;
+                        return article;
+                      })
+                    );
+                }
+
+                return of({ ...article, imgSrc: 'https://localhost:5001/api/images/ratbags.jpg' });
+              }
+            );
+
+            return forkJoin(articlesWithImages$)
+              .pipe(
+                map(
+                  articlesWithImages => (
+                    {
+                      ...pagedResult,
+                      items: articlesWithImages
+                    }
+                  )
+                )
+              );
+          }
+        )
+      );
   }
+
 
   pageChange(event: number) {
     if (this.initialised) {
@@ -43,5 +89,13 @@ export class ArticlesComponent implements OnInit {
       this.loadArticles();
       console.log('pageChangeEvent', event);
     }
+  }
+
+  getThumbnailImageUrl(imageUrl: string): Observable<string> | null {
+    if (imageUrl) {
+      console.log(imageUrl);
+      return this.imagesService.get(imageUrl);
+    }
+    return null;
   }
 }
