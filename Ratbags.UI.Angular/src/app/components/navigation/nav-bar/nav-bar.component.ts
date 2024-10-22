@@ -19,7 +19,7 @@ import { faMoon } from '@fortawesome/free-solid-svg-icons';
   templateUrl: './nav-bar.component.html',
   styleUrl: './nav-bar.component.scss'
 })
-export class NavBarComponent implements OnInit, OnChanges {
+export class NavBarComponent implements OnInit {
   isLoggedIn$ = this.accountsService.validateToken$;
 
   collapsed: boolean = true;
@@ -56,10 +56,6 @@ export class NavBarComponent implements OnInit, OnChanges {
           this.onArticlesPage = event.url.indexOf('/articles') > -1 && event.url.indexOf('/articles/') === -1;
         }
       });
-  }
-
-  ngOnChanges() {
-    console.log('in there after view init');
   }
 
   logout() {

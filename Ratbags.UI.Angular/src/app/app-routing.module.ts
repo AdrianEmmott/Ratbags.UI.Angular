@@ -12,6 +12,7 @@ import { ArticleComponent } from './components/articles/article/article.componen
 import { ArticlesComponent } from './components/articles/articles.component';
 import { HomeComponent } from './components/home/home.component';
 import { AboutComponent } from './components/about/about.component';
+import { CanDeactivateGuard } from './guards/can-deactivate.guard';
 
 const routes: Routes = [
   { path: '', component: HomeComponent }, // Default route
@@ -33,8 +34,8 @@ const routes: Routes = [
   { path: 'about', component: AboutComponent },
 
   { path: 'articles', component: ArticlesComponent },
-  { path: 'articles/new', component: ArticleComponent },
-  { path: 'articles/:id', component: ArticleComponent }
+  { path: 'articles/new', component: ArticleComponent, canDeactivate: [CanDeactivateGuard] },
+  { path: 'articles/:id', component: ArticleComponent, canDeactivate: [CanDeactivateGuard] }
   
   //{ path: '**', component: PageNotFoundComponent }
 ];

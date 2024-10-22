@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Observable, forkJoin, map, of, switchMap } from 'rxjs';
 
 import { Article } from '../../interfaces/article';
-import { ArticleListItem } from '../../interfaces/articleListItem';
+import { ArticleListItem } from '../../interfaces/article-list-item';
 import { PagedResult } from '../../interfaces/paged-result';
 import { ArticlesService } from '../../services/articles.service';
 import { ImagesService } from '../../services/images.service';

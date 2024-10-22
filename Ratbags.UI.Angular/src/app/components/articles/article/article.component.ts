@@ -1,8 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+import { of, switchMap, tap } from 'rxjs';
 
 import { Article } from '../../../interfaces/article';
+import { CanComponentDeactivate } from '../../../interfaces/can-component-deactivate';
 import { AccountsService } from '../../../services/account/accounts.service';
 import { AppConfigService } from '../../../services/app-config.service';
 import { ArticlesService } from '../../../services/articles.service';
@@ -11,16 +14,13 @@ import { ImagesService } from '../../../services/images.service';
 
 // icons
 import { faCoffee } from '@fortawesome/free-solid-svg-icons';
-import { ToastrService } from 'ngx-toastr';
-import { of, switchMap, tap } from 'rxjs';
-
 
 @Component({
   selector: 'app-article',
   templateUrl: './article.component.html',
   styleUrl: './article.component.scss',
 })
-export class ArticleComponent implements OnInit {
+export class ArticleComponent implements OnInit, CanComponentDeactivate {
   editArticle$ = this.articlesService.editArticle$;
 
   isLoggedIn$ = this.accountsService.validateToken$;
@@ -34,6 +34,8 @@ export class ArticleComponent implements OnInit {
   bannerImage: File | null = null;
   bannerImageUrl: string | null = null;
 
+  formDirty: boolean = true; 
+
   // icons
   faCoffee = faCoffee;
 
@@ -45,10 +47,24 @@ export class ArticleComponent implements OnInit {
     private articlesService: ArticlesService,
     private commentsService: CommentsService,
     private imagesService: ImagesService,
-    private toastrService: ToastrService) {
+    private toastrService: ToastrService,) {
+  }
+
+  // we good to navigate away from the page?
+  canDeactivate(): boolean {
+    console.log('this.form.dirty', this.form.dirty);
+    return !(this.showEditor && this.form.dirty);
+  }
+
+  // clean up editor mode and stop site blowing up when viewing other articles
+  editFinished() {
+    this.showEditor = false;
+    this.articlesService.editFinished();
   }
 
   ngOnInit() {
+    console.log('this.showEditor', this.showEditor);
+
     this.accountsService.validateToken(); // is user logged in - check once...
 
     // pipe tap and switchmap, all so we can safely edit.
@@ -56,7 +72,7 @@ export class ArticleComponent implements OnInit {
     // 2) grab the article id from route, if viewing article 
     // 3) or create a new article
     // 4) finally setup the editor form if editing.
-    // without all this, bugs galore because the form tries to build before article exists
+    // without all this, bugs galore because the edit form tries to build before article exists
     this.editArticle$
       .pipe(
         tap(
@@ -73,7 +89,6 @@ export class ArticleComponent implements OnInit {
         ),
         switchMap(
           params => {
-            
             const id = params.get('id');
 
             if (id) {
@@ -129,7 +144,7 @@ export class ArticleComponent implements OnInit {
 
           this.getBannerImageUrl(); // TODO - yikes move this
 
-          console.log(this.article);
+          //console.log(this.article);
         }
       });
   }
@@ -146,14 +161,13 @@ export class ArticleComponent implements OnInit {
   }
   cancel() {
     if (!this.article.id) {
-      this.articlesService.editFinished();
+      this.editFinished();
       this.router.navigate(['/articles']);
     }
     else {
       this.form?.patchValue({ title: this.article?.title });
       this.form?.patchValue({ content: this.article?.content });
-      this.showEditor = false;
-      this.articlesService.editFinished();
+      this.editFinished();
     }
   }
 
@@ -198,8 +212,7 @@ export class ArticleComponent implements OnInit {
               this.router.navigate(['/articles', id]);
             }
 
-            this.showEditor = false;
-            this.articlesService.editFinished();
+            this.editFinished();
           }
         });
     }
@@ -230,8 +243,7 @@ export class ArticleComponent implements OnInit {
         )
         .subscribe({
           next: result => {
-            this.showEditor = false;
-            this.articlesService.editFinished();
+            this.editFinished();
           }
         });
     }

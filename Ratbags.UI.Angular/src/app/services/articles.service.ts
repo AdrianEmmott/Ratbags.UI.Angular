@@ -5,7 +5,7 @@ import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { AppConfigService } from './app-config.service';
 
 import { Article } from '../interfaces/article';
-import { ArticleListItem } from '../interfaces/articleListItem';
+import { ArticleListItem } from '../interfaces/article-list-item';
 import { PagedResult } from '../interfaces/paged-result';
 
 @Injectable({

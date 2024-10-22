@@ -17,10 +17,12 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { EditorModule } from '@tinymce/tinymce-angular';
 
 // components
+import { AboutComponent } from './components/about/about.component';
 import { AccountComponent } from './components/accounts/account/account.component';
 import { ExternalSigninCallbackComponent } from './components/accounts/external-sign-in/external-sign-in-callback/external-sign-in-callback.component';
 import { FacebookSignInButtonComponent } from './components/accounts/external-sign-in/facebook-sign-in-button/facebook-sign-in-button.component';
 import { GoogleSignInButtonComponent } from './components/accounts/external-sign-in/google-sign-in-button/google-sign-in-button.component';
+import { LoginTroubleComponent } from './components/accounts/login/login-trouble/login-trouble.component';
 import { LoginWrapperComponent } from './components/accounts/login/login-wrapper/login-wrapper.component';
 import { LoginComponent } from './components/accounts/login/login.component';
 import { PasswordConfirmationComponent } from './components/accounts/password-confirmation/password-confirmation.component';
@@ -38,14 +40,9 @@ import { ContentEditorComponent } from './components/editor/content-editor/conte
 import { HomeComponent } from './components/home/home.component';
 import { NavBarComponent } from './components/navigation/nav-bar/nav-bar.component';
 import { SearchComponent } from './components/search/search.component';
+import { UnsavedChangesPromptComponent } from './components/unsaved-changes-prompt/unsaved-changes-prompt.component';
 import { ImageUploadComponent } from './components/upload/image-upload/image-upload.component';
-
-// services
-import { LoginTroubleComponent } from './components/accounts/login/login-trouble/login-trouble.component';
 import { AppConfigService } from './services/app-config.service';
-import { AboutComponent } from './components/about/about.component';
-
-
 
 @NgModule({
   declarations: [
@@ -73,6 +70,7 @@ import { AboutComponent } from './components/about/about.component';
     ResendRegisterConfirmEmailComponent,
     RegisterConfirmEmailComponent,
     AboutComponent,
+    UnsavedChangesPromptComponent,
   ],
   imports: [
     BrowserModule,
