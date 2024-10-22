@@ -52,7 +52,7 @@ export class ArticleComponent implements OnInit, CanComponentDeactivate {
 
   // we good to navigate away from the page?
   canDeactivate(): boolean {
-    console.log('this.form.dirty', this.form.dirty);
+    //console.log('this.form.dirty', this.form.dirty);
     return !(this.showEditor && this.form.dirty);
   }
 

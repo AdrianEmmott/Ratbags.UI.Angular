@@ -1,34 +1,39 @@
-<section class="mt-5" id="comments" *ngIf="article">
-  <!-- comment count -->
-  <p>
-    <a data-bs-toggle="collapse"
-       role="button"
-       class="link-opacity-75 link-opacity-100-hover hover text-decoration-none link-underline-opacity-0-hover"
-       aria-controls="collapseExample"
-       [attr.aria-expanded]="!isCollapsed"
-       (click)="collapse.toggle()">
-      {{ article.comments.length }}
-      <fa-icon [icon]="faComments" class="me-2 fa-regular"></fa-icon>
-    </a>
-  </p>
-
-  <!-- comments -->
-  <div #collapse="ngbCollapse" [(ngbCollapse)]="isCollapsed">
-    <ng-container *ngFor="let comment of article.comments">
-      <div class="comment mt-4 mb-3">
-        <div class="d-flex justify-content-between align-items-center">
-          <p><strong>{{ comment.commenterName }}</strong></p>
-          <small class="text-muted">{{ comment.published | date : 'dd/MM/yyyy HH:mm:ss' }}</small>
-        </div>
-        <p>{{ comment.content }}</p>
-        <div class="comment-footer">
-          <button class="btn btn-sm btn-outline-primary" *ngIf="isLoggedIn">Reply</button>
-        </div>
-        <hr />
-      </div>
-    </ng-container>
-
-    <!-- add comment -->
-    <app-comment [article]="article" [isLoggedIn]="isLoggedIn" (getComments)="getCommentsbyArticleId()"></app-comment>
+<ng-template #content let-offcanvas>
+  <div class="offcanvas-header">
+    <h4 class="offcanvas-title" id="offcanvas-basic-title">Comments</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="offcanvas.dismiss('Cross click')"></button>
   </div>
-</section>
+  <div class="offcanvas-body" *ngIf="article">
+    <form>
+      <div class="mb-3">
+        <!-- comments -->
+        <ng-container *ngFor="let comment of article.comments">
+          <div class="comment mt-4 mb-3">
+            <div class="d-flex justify-content-between align-items-center">
+              <p><strong>{{ comment.commenterName }}</strong></p>
+              <small class="text-muted">{{ comment.published | date : 'dd/MM/yyyy HH:mm:ss' }}</small>
+            </div>
+            <p>{{ comment.content }}</p>
+            <div class="comment-footer">
+              <button class="btn btn-sm btn-outline-primary" *ngIf="isLoggedIn">Reply</button>
+            </div>
+            <hr />
+          </div>
+        </ng-container>
+
+        <!-- add comment -->
+        <app-comment [article]="article" [isLoggedIn]="isLoggedIn" (getComments)="getCommentsbyArticleId()"></app-comment>
+      </div>
+    </form>
+    <div class="text-end">
+      <button type="button" class="btn btn-outline-secondary" (click)="offcanvas.close('Save click')">Save</button>
+    </div>
+  </div>
+</ng-template>
+
+<button class="btn btn-sm btn-outline-primary"
+        (click)="openEnd(content)"
+        *ngIf="article">
+  {{ article.comments.length }} comments 
+  <fa-icon [icon]="faComments" class="me-2 fa-regular"></fa-icon>
+</button>

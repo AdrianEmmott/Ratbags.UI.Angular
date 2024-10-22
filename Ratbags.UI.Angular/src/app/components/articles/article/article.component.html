@@ -42,6 +42,13 @@
   <!-- editor -probably should be in its own component -->
   <section *ngIf="(isLoggedIn$ | async) && showEditor">
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="mb-3">
+        <h3 *ngIf="article.id.length">Editing '{{article.title}}'</h3>
+        <h3 *ngIf="!article.id.length">Create article</h3>
+        <hr />
+      </div>
+      
+
       <div class="form-group">
         <label for="title" class="fw-bold">Title</label>
         <input type="text" class="form-control" id="title" placeholder="Article title" formControlName="title" />
@@ -59,10 +66,10 @@
       <div class="form-group">
         <label for="introduction" class="fw-bold">Intro</label>
         <textarea type="text"
-               class="form-control"
-               id="introduction"
-               placeholder="Introduction appears in the article, above the image"
-               formControlName="introduction"></textarea>
+                  class="form-control"
+                  id="introduction"
+                  placeholder="Introduction appears in the article, above the image"
+                  formControlName="introduction"></textarea>
       </div>
 
       <hr />

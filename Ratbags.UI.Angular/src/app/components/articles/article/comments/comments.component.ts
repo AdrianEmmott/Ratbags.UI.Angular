@@ -1,13 +1,13 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, TemplateRef, inject } from '@angular/core';
+import { NgbDatepickerModule, NgbOffcanvas, OffcanvasDismissReasons } from '@ng-bootstrap/ng-bootstrap';
+import { NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
+import { Router } from '@angular/router';
 
 import { Article } from '../../../../interfaces/article';
 import { Comment } from '../../../../interfaces/comment';
 import { CommentsService } from '../../../../services/comments.service';
 
 import { faComments, faMinusSquare, faPlusSquare } from '@fortawesome/free-regular-svg-icons';
-
-import { NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-comments',
@@ -17,6 +17,9 @@ import { Router } from '@angular/router';
 export class CommentsComponent implements OnInit {
   @Input() article: Article | undefined;
   @Input() isLoggedIn: boolean = false;
+
+  private offcanvasService = inject(NgbOffcanvas);
+  closeResult = '';
 
   isCollapsed: boolean = false;
 
@@ -42,6 +45,30 @@ export class CommentsComponent implements OnInit {
             }
           }
         });
+    }
+  }
+
+
+
+  openEnd(content: TemplateRef<any>) {
+    this.offcanvasService.open(content, { ariaLabelledBy: 'offcanvas-basic-title', position: 'end', scroll: true }).result.then(
+      (result) => {
+        //this.closeResult = `Closed with: ${result}`;
+      },
+      (reason) => {
+        //this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
+      },
+    );
+  }
+
+  private getDismissReason(reason: any): string {
+    switch (reason) {
+      case OffcanvasDismissReasons.ESC:
+        return 'by pressing ESC';
+      case OffcanvasDismissReasons.BACKDROP_CLICK:
+        return 'by clicking on the backdrop';
+      default:
+        return `with: ${reason}`;
     }
   }
 }
