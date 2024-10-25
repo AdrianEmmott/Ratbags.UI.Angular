@@ -62,7 +62,6 @@ export class AccountsService {
         map(() => true),// token will always be valid if there is a valid response
         catchError(() => of(false)), // unauthorised, token invalid or expired
         tap(status => {
-          console.log('accounts service validateToken', status);
           // grabbing the status from map
           this.tokenValidSubject.next(status);
         })

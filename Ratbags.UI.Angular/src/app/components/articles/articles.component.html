@@ -4,11 +4,11 @@
       <div class="col-md-4 col-sm-6 mb-4" *ngFor="let article of pagedResult.items">
         <div class="card rounded-0">
           <div class="card-img-top" >
-            <img class="card-img-top image-fixed rounded-0"
-                 
-                 alt="{{ article.title }}"
-                 [src]="article.imgSrc"
-                 />
+            <a [routerLink]="['/articles/' + article.id]">
+              <img class="card-img-top image-fixed rounded-0"
+                   alt="{{ article.title }}"
+                   [src]="article.imgSrc" />
+            </a>
           </div>
           <div class="card-body">
             <h5 class="card-title small">
@@ -17,8 +17,8 @@
             <p class="card-text small">{{ article.description }}</p>
           </div>
           <div class="card-footer text-muted d-flex align-content-center">
-            <p class="text-start col-sm-6 mb-0" >{{ article.published | date: 'dd/MM/yyyy'}}</p>
-            <p class="text-end col-sm-6 mb-0"><fa-icon [icon]="faComments"></fa-icon> {{article.commentCount}}</p>
+            <p class=" text-start col-sm-6 col-6 mb-0" >{{ article.published | date: 'dd/MM/yyyy'}}</p>
+            <p class="justify-content-end col-6 text-end col-sm-6 mb-0"><fa-icon [icon]="faComments"></fa-icon> {{article.commentCount}}</p>
           </div>
         </div>
       </div>

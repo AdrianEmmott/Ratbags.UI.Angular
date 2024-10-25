@@ -1,15 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { RegisterService } from '../../../../services/account/register.service';
 import { ToastrService } from 'ngx-toastr';
+import { RegisterService } from '../../../../services/account/register.service';
 
 @Component({
   selector: 'app-resend-register-confirm-email',
   templateUrl: './resend-register-confirm-email.component.html',
   styleUrl: './resend-register-confirm-email.component.scss'
 })
-export class ResendRegisterConfirmEmailComponent implements OnInit {
+export class ResendRegisterConfirmEmailComponent {
   form: FormGroup;
   submitted: boolean = false;
 
@@ -25,10 +25,6 @@ export class ResendRegisterConfirmEmailComponent implements OnInit {
     this.form = new FormGroup({
       email: new FormControl('', [Validators.required, Validators.email])
     });
-  }
-
-  ngOnInit() {
-
   }
 
   onSubmit() {

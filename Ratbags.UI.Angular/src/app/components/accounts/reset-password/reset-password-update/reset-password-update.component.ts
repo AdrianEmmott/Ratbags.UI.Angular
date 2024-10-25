@@ -38,9 +38,6 @@ export class ResetPasswordUpdateComponent implements OnInit {
 
           this.f['userId'].setValue(this.userId);
           this.f['token'].setValue(this.token);
-
-          console.log('this.f[userId]', this.f['userId'].value);
-          console.log('this.f[token]', this.f['token'].value);
         }
       });
   }

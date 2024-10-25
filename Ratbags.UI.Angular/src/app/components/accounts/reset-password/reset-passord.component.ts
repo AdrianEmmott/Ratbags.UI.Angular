@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { ResetPasswordService } from '../../../services/account/reset-password.service';
@@ -8,7 +8,7 @@ import { ResetPasswordService } from '../../../services/account/reset-password.s
   templateUrl: './reset-passord.component.html',
   styleUrl: './reset-passord.component.scss'
 })
-export class ResetPasswordComponent implements OnInit {
+export class ResetPasswordComponent {
   form: FormGroup;
   submitted: boolean = false;
   
@@ -22,9 +22,6 @@ export class ResetPasswordComponent implements OnInit {
     this.form = new FormGroup({
       email: new FormControl ('', [Validators.required, Validators.email])
     });
-  }
-
-  ngOnInit() {
   }
 
   onSubmit() {

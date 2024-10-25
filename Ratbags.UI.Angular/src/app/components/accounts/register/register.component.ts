@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { RegisterService } from '../../../services/account/register.service';
 
@@ -12,7 +12,7 @@ import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss'
 })
-export class RegisterComponent implements OnInit {
+export class RegisterComponent {
   form: FormGroup;
   submitted = false;
   errorMessage: string | null = null;
@@ -40,10 +40,6 @@ export class RegisterComponent implements OnInit {
 
   get f() {
     return this.form.controls;
-  }
-
-  ngOnInit() {
-    
   }
 
   onSubmit() {

@@ -13,4 +13,5 @@ export interface Article {
   comments: Comment[];
   userId: string;
   authorName?: string;
+  views?: number;
 }

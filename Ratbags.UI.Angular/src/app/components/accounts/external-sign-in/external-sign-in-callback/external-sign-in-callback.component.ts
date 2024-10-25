@@ -1,17 +1,19 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { AccountsService } from '../../../../services/account/accounts.service';
 import { ExternalSigninService } from '../../../../services/account/external-signin.service';
 import { ExternalAuthenticationProvidersEnum } from '../../../../enums/external-authentication-providers.enum';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-external-sign-in-callback',
   templateUrl: './external-sign-in-callback.component.html',
   styleUrl: './external-sign-in-callback.component.scss'
 })
-export class ExternalSigninCallbackComponent implements OnInit {
+export class ExternalSigninCallbackComponent implements OnInit, OnDestroy {
   externalAuthenticationProvider: ExternalAuthenticationProvidersEnum;
+  localSubscription!: Subscription;
 
   constructor(
     private route: ActivatedRoute,
@@ -25,7 +27,8 @@ export class ExternalSigninCallbackComponent implements OnInit {
   ngOnInit() {
     let providerName: string | null;
 
-    this.route.paramMap
+    // TODO nested subscribe
+    this.localSubscription = this.route.paramMap
       .subscribe({
         next: params => {
           providerName = params.get('providerName') ?? ExternalAuthenticationProvidersEnum[ExternalAuthenticationProvidersEnum.None].toLowerCase();
@@ -60,7 +63,11 @@ export class ExternalSigninCallbackComponent implements OnInit {
             });
         }
       });
+  }
 
-    
+  ngOnDestroy() {
+    if (this.localSubscription) {
+      this.localSubscription.unsubscribe();
+    }
   }
 }

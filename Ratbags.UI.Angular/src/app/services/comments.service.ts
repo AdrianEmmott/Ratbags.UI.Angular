@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 
 import { AppConfigService } from './app-config.service';
 import { Comment } from '../interfaces/comment';
@@ -11,6 +11,9 @@ import { Comment } from '../interfaces/comment';
 export class CommentsService {
   private apiUrl = `${this.appConfigService.apiBaseUrl}/api/comments`;
 
+  showCommentsOffCanvasSubject = new BehaviorSubject<boolean>(false); // useful when components other than comments.component want to show comments
+  showCommentsOffCanvas$ = this.showCommentsOffCanvasSubject.asObservable();
+
   constructor(private http: HttpClient,
     private appConfigService: AppConfigService) { }
 
@@ -20,5 +23,9 @@ export class CommentsService {
 
   getCommentsByArticleId(id: string): Observable<Comment[]> {
     return this.http.get<Comment[]>(`${this.apiUrl}/article/${id}`);
+  }
+
+  showCommentsOffCanvas(show: boolean) {
+    this.showCommentsOffCanvasSubject.next(show);
   }
 }

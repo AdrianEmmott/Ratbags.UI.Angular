@@ -37,8 +37,9 @@
                  routerLinkActive="active"
                  ariaCurrentWhenActive="page"
                  [class.disabled]="!onArticlesPage"
-                 [routerLink]="['/articles/new']">
-                Create article
+                 [routerLink]="['/articles/new']"
+                 (click)="editArticle(true)">
+                <fa-icon [icon]="faFile"></fa-icon> Create article
               </a>
             </li>
 
@@ -46,14 +47,32 @@
               <a class="dropdown-item edit-article"
                  routerLinkActive="active"
                  ariaCurrentWhenActive="page"
-                 [class.disabled]="!onArticlePage"
-                 (click)="editArticle()">
-                Edit this article
+                 [class.disabled]="!onArticlePage || (articlesService.editArticle$ | async)"
+                 (click)="editArticle(true)">
+                <fa-icon [icon]="faPenToSquare"></fa-icon> Edit this article
               </a>
             </li>
 
             <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" [routerLink]="['/login']">Something else here</a></li>
+
+            <li>
+              <a class="dropdown-item edit-article"
+                 routerLinkActive="active"
+                 ariaCurrentWhenActive="page"
+                 [class.disabled]="!onArticlePage || !(articlesService.editArticle$ | async)"
+                 (click)="saveChanges()">
+                <fa-icon [icon]="faFloppyDisk"></fa-icon> Save changes
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item edit-article"
+                 routerLinkActive="active"
+                 ariaCurrentWhenActive="page"
+                 [class.disabled]="!onArticlePage || !(articlesService.editArticle$ | async)"
+                 (click)="editArticle(false)">
+                <fa-icon [icon]="faCancel"></fa-icon> Cancel edit / create
+              </a>
+            </li>
           </ul>
         </li>
         <li class="nav-item">

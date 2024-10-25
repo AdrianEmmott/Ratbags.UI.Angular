@@ -6,6 +6,7 @@
   <div class="offcanvas-body" *ngIf="article">
     <form>
       <div class="mb-3">
+
         <!-- comments -->
         <ng-container *ngFor="let comment of article.comments">
           <div class="comment mt-4 mb-3">
@@ -25,15 +26,12 @@
         <app-comment [article]="article" [isLoggedIn]="isLoggedIn" (getComments)="getCommentsbyArticleId()"></app-comment>
       </div>
     </form>
-    <div class="text-end">
-      <button type="button" class="btn btn-outline-secondary" (click)="offcanvas.close('Save click')">Save</button>
-    </div>
   </div>
 </ng-template>
 
 <button class="btn btn-sm btn-outline-primary"
         (click)="openEnd(content)"
         *ngIf="article">
-  {{ article.comments.length }} comments 
   <fa-icon [icon]="faComments" class="me-2 fa-regular"></fa-icon>
+  {{ article.comments.length }} comments
 </button>

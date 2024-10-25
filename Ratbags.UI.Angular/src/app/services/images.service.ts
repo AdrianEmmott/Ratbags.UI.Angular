@@ -27,7 +27,6 @@ export class ImagesService {
         map(
           blob => {
             var returnUrl = window.URL.createObjectURL(blob);
-            //console.log('returnUrl', returnUrl);
             return returnUrl;
           }
         )

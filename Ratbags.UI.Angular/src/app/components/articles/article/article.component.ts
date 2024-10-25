@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { of, switchMap, tap } from 'rxjs';
+import { Observable, Subscription, from, map, of, switchMap, tap } from 'rxjs';
 
 import { Article } from '../../../interfaces/article';
 import { CanComponentDeactivate } from '../../../interfaces/can-component-deactivate';
@@ -13,20 +13,22 @@ import { CommentsService } from '../../../services/comments.service';
 import { ImagesService } from '../../../services/images.service';
 
 // icons
+import { faComments, faEye } from '@fortawesome/free-regular-svg-icons';
 import { faCoffee } from '@fortawesome/free-solid-svg-icons';
+
 
 @Component({
   selector: 'app-article',
   templateUrl: './article.component.html',
   styleUrl: './article.component.scss',
 })
-export class ArticleComponent implements OnInit, CanComponentDeactivate {
-  editArticle$ = this.articlesService.editArticle$;
-
+export class ArticleComponent implements OnInit, CanComponentDeactivate, OnDestroy {
   isLoggedIn$ = this.accountsService.validateToken$;
+  localSaveChangesSubscription!: Subscription;
+
+  localSubscription!: Subscription;
 
   form!: FormGroup;
-
 
   article!: Article;
   showEditor: boolean = false;
@@ -38,6 +40,8 @@ export class ArticleComponent implements OnInit, CanComponentDeactivate {
 
   // icons
   faCoffee = faCoffee;
+  faComments = faComments;
+  faEye = faEye;
 
   constructor(private route: ActivatedRoute,
     public router: Router,
@@ -52,66 +56,164 @@ export class ArticleComponent implements OnInit, CanComponentDeactivate {
 
   // we good to navigate away from the page?
   canDeactivate(): boolean {
-    //console.log('this.form.dirty', this.form.dirty);
     return !(this.showEditor && this.form.dirty);
   }
 
-  // clean up editor mode and stop site blowing up when viewing other articles
+  // *** clean up editor mode and stop site blowing up when viewing other articles ***
+  //
+  // without this cleanup, if the user views other articles after editing AND abandoning that edit by navigating away,
+  // any subsequent article views will open in edit mode - which we don't want and we'll get errors.
+  //
+  // this is because we get into article edit mode on this component more from a menu item on the navbar -
+  // it fires editArticleSubject(true) in the articlesService, and is observed by editArticle$, also in that service.
+  //
+  // editArticle$ is observed by getArticleOrUseExisting method, also in that service.
+  // ...and breathe...
   editFinished() {
-    this.showEditor = false;
-    this.articlesService.editFinished();
+    if (this.showEditor) {
+      this.localSubscription.unsubscribe(); // do this before editFinished or ngOnInit will fire again
+      this.articlesService.editFinished();
+    }
   }
 
   ngOnInit() {
-    console.log('this.showEditor', this.showEditor);
-
     this.accountsService.validateToken(); // is user logged in - check once...
 
-    // pipe tap and switchmap, all so we can safely edit.
-    // 1) check if edit mode
-    // 2) grab the article id from route, if viewing article 
-    // 3) or create a new article
-    // 4) finally setup the editor form if editing.
-    // without all this, bugs galore because the edit form tries to build before article exists
-    this.editArticle$
+    // there's a lot going on here...
+    //
+    // 1  - grab the article id from route
+    // 2a - get article from api if viewing / or return existing article if editing. returns article and editing flag to next switchMap
+    // 2b - or setup a new article if creating. returns article and editing flag to next switchMap
+    // 3a - don't forget the banner image!
+    // 3b - grab the image from the api
+    // 3c - map the image into our return. returns article, editing flag and image src (a blob url)
+    // 3d - don't have a banner image? that's cool, just pass along an empty string. returns article, edit flag and empty imageSrc
+    // 4a - set up article and showEditor flag
+    // 4b - set up edit form if needed
+    //
+    this.localSubscription = this.route.paramMap
       .pipe(
-        tap(
-          (editResult: boolean) => {
-            // check if edit mode
-            this.showEditor = editResult;
-          }
-        ),
-        switchMap(
-          () => {
-            // grab route params
-            return this.route.paramMap;
-          }
-        ),
         switchMap(
           params => {
+            // check for params and get / create article
+
+            // 1 - grab the article id from route
             const id = params.get('id');
 
             if (id) {
-              // grab the article id from route, if viewing article
-              // and return bogus observable
-              return of(this.getArticle(id));
+              // 2a - get article from api if viewing / or return existing article if editing. returns article and editing flag to next switchMap
+              return this.articlesService.getArticleOrUseExisting(id, this.article);
             }
             else {
-              // or create a new article
-              // and return bogus observable
-              return of(this.setupCreate());
+              // 2b - or setup a new article if creating. returns article and editing flag to next switchMap
+              return of({ article: this.setupCreate(), edit: true });
             }
-          })
+          }
+        ),
+        switchMap(
+          ({ article, edit }) => {
+            // check for banner image
+
+            // 3 - don't forget the banner image! 
+            if (article && article.bannerImageUrl) {
+              // 3b - grab the image from the api
+              return this.imagesService.get(article.bannerImageUrl)
+                .pipe(
+                  map(
+                    // 3c - map the image into our return. returns article, editing flag and image src (a blob url)
+                    (imageSrc) =>
+                      ({ article: article, edit: edit, imageSrc: imageSrc })
+                  ),
+                  tap(result => {
+                    // 3d - side effect - set the bannerImageUrl from the get
+                    this.bannerImageUrl = result.imageSrc;
+                  })
+                )
+            }
+            else {
+              // 3d - don't have a banner image? that's cool, just pass along an empty string. returns article, edit flag and empty image src
+              return of({ article: article, edit: edit, imageSrc: '' });
+            }
+          }
+        ),
+        switchMap(
+          ({ article, edit, imageSrc }) => {
+            // check if save clicked
+            return this.articlesService.saveChanges$
+              .pipe(
+                map(saving => ({ article: article, edit: edit, imageSrc: imageSrc, save: saving })
+                )
+              )
+
+            // no save
+            return of({ article: article, edit: edit, imageSrc: imageSrc, save: false });
+          }
+        ),
+        switchMap(
+          ({ article: article, edit: edit, imageSrc: imageSrc, save: save }) => {
+            if (save) {
+              // saving
+              this.updateModelFromForm();
+
+              if (article?.id) {
+                // update
+                return this.articlesService.update(article)
+                  .pipe(
+                    map(
+                      response => ({ article: article, edit: edit, imageSrc: imageSrc, save: true, create: false, id: article.id })
+                    )
+                  )
+              }
+              else {
+                // create
+                return this.articlesService.create(<Article>this.article)
+                  .pipe(
+                    map(
+                      response => {
+                        console.log('create response', response);
+                        return ({ article: article, edit: edit, imageSrc: imageSrc, save: true, create: true, id: response.body });
+                      }
+                    )
+                  )
+              }
+            }
+
+            // not saving
+            return of({ article: article, edit: edit, imageSrc: imageSrc, save: false, create: false, id: article.id });
+          }
+        )
       )
       .subscribe({
         next:
-          () => {
+          ({ article, edit, imageSrc, save, create, id }) => {
+            if (save) {
+              this.articlesService.saveChanges(false);
+              this.articlesService.editFinished();
+
+              if (create) {
+                this.router.navigate(['/articles', id]);
+              }
+            }
+
+            // 4a - set up article and showEditor flag
+            this.article = article;
+            this.showEditor = edit;
+
+            // 4b - set up edit form if needed
             if (this.showEditor) {
-              // finally setup the editor form if editing
               this.setupForm();
             }
           }
       });
+  }
+
+  ngOnDestroy() {
+    if (this.localSubscription) {
+      this.localSubscription.unsubscribe();
+      console.log('ArticleComponent - ngOnDestroy unsub local');
+    }
+
+    this.commentsService.showCommentsOffCanvas(false);
   }
 
   setupForm() {
@@ -139,39 +241,32 @@ export class ArticleComponent implements OnInit, CanComponentDeactivate {
             publishDate: result.publishDate,
             comments: result.comments,
             userId: result.userId,
-            authorName: result.authorName
+            authorName: result.authorName,
+            views: result.views
           }
-
-          this.getBannerImageUrl(); // TODO - yikes move this
-
-          //console.log(this.article);
         }
       });
   }
 
-  onSubmit() {
-    if (this.form) {
-      if (!this.article.id) {
-        this.create();
-      }
-      else {
-        this.update();
-      }
-    }
-  }
-  cancel() {
-    if (!this.article.id) {
-      this.editFinished();
-      this.router.navigate(['/articles']);
-    }
-    else {
-      this.form?.patchValue({ title: this.article?.title });
-      this.form?.patchValue({ content: this.article?.content });
-      this.editFinished();
+  getBannerImageUrl() {
+    if (this.article && this.article.bannerImageUrl) {
+      this.imagesService.get(this.article.bannerImageUrl)
+        .subscribe({
+          next: (src: string) => {
+            this.bannerImageUrl = src;
+          }
+        });
     }
   }
 
-  setupCreate() {
+  showComments() {
+    // fires behaviour subject on service which the comments component subscribes to
+    this.commentsService.showCommentsOffCanvas(true);
+  }
+
+  // TODO everything below probably needs to go into an editor component
+  
+  setupCreate(): Article {
     this.article = {
       id: '',
       title: '',
@@ -183,46 +278,12 @@ export class ArticleComponent implements OnInit, CanComponentDeactivate {
       userId: ''
     }
 
-    this.showEditor = true;
-
     this.setupForm();
+
+    return this.article;
   }
-  create() {
-    if (this.article) {
-      this.article.title = this.form?.controls['title'].value;
-      this.article.description = this.form?.controls['description'].value;
-      this.article.introduction = this.form?.controls['introduction'].value;
-      this.article.content = this.form?.controls['content'].value;
-
-      this.articlesService.create(<Article>this.article)
-        .subscribe({
-          next: (response) => {
-            const id = response.body;
-            const locationHeader = response.headers.get('Location');
-
-            if (locationHeader) {
-              console.log('navigating from response headers');
-
-              const relativeUrl = new URL(locationHeader).pathname;
-              this.router.navigateByUrl(relativeUrl);
-            }
-            else if (id) {
-              console.log('navigating the old fashioned way');
-
-              this.router.navigate(['/articles', id]);
-            }
-
-            this.editFinished();
-          }
-        });
-    }
-  }
-
-  edit() {
-    this.setupForm();
-    this.showEditor = true;
-  }
-  update() {
+  
+  updateModelFromForm() {
     if (this.article) {
       this.article.title = this.form?.controls['title'].value;
       this.article.description = this.form?.controls['description'].value;
@@ -232,31 +293,6 @@ export class ArticleComponent implements OnInit, CanComponentDeactivate {
       if (this.bannerImage) {
         this.article.bannerImageUrl = this.bannerImage.name;
       }
-
-      this.articlesService.update(<Article>this.article)
-        .pipe(
-          switchMap(
-            () => {
-              return of(this.getArticle(this.article.id));
-            }
-          )
-        )
-        .subscribe({
-          next: result => {
-            this.editFinished();
-          }
-        });
-    }
-  }
-
-  getBannerImageUrl() {
-    if (this.article && this.article.bannerImageUrl) {
-      this.imagesService.get(this.article.bannerImageUrl)
-        .subscribe({
-          next: (src: string) => {
-            this.bannerImageUrl = src;
-          }
-        });
     }
   }
 

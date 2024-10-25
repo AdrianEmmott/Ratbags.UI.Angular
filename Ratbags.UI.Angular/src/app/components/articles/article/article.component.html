@@ -1,13 +1,18 @@
 <div class="mt-5" *ngIf="article">
   <section *ngIf="!showEditor">
     <article>
-      <header class="mb-4">
+      <header class="mb-4 col-12">
         <h1 class="display-4">{{ article.title }}</h1>
         <p class="fs-5 mt-4" *ngIf="article.introduction">{{ article.introduction }}</p>
-        <p class="text-muted">
-          {{ article.authorName }} | {{ article.created | date : 'dd/MM/yyyy HH:mm' }} {{ article.updated ? '(updated ' + (article.updated | date : 'dd/MM/yyyy HH:mm') + ')': '' }}
-          <fa-icon [icon]="faCoffee"></fa-icon>
-        </p>
+        <div class="text-muted col-12 col-sm-12 d-flex">
+          <div class="text-start">
+            {{ article.authorName }}
+            | {{ article.publishDate ? (article.publishDate | date : 'dd/MM/yyyy HH:mm') : article.created | date : 'dd/MM/yyyy HH:mm' }}
+            | <a class="comments-link ms-1 me-1" (click)="showComments()"><fa-icon [icon]="faComments"></fa-icon>{{ article.comments.length }}</a>
+            | <span class="ms-1"><fa-icon [icon]="faEye"></fa-icon> {{ article.views }}</span>
+            <!--<fa-icon [icon]="faCoffee"></fa-icon>-->
+          </div>
+        </div>
       </header>
 
       <!-- banner image -->
@@ -41,25 +46,30 @@
 
   <!-- editor -probably should be in its own component -->
   <section *ngIf="(isLoggedIn$ | async) && showEditor">
-    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <form [formGroup]="form">
       <div class="mb-3">
         <h3 *ngIf="article.id.length">Editing '{{article.title}}'</h3>
         <h3 *ngIf="!article.id.length">Create article</h3>
         <hr />
       </div>
-      
 
       <div class="form-group">
         <label for="title" class="fw-bold">Title</label>
-        <input type="text" class="form-control" id="title" placeholder="Article title" formControlName="title" />
+        <input type="text"
+               maxlength="100"
+               class="form-control"
+               id="title"
+               placeholder="Article title"
+               formControlName="title" />
       </div>
 
       <div class="form-group">
-        <label for="description" class="fw-bold">Description - tag line</label>
+        <label for="description" class="fw-bold">Description - tag line - keep it short</label>
         <input type="text"
+               maxlength="100"
                class="form-control"
                id="description"
-               placeholder="Descripion is a tag line which appears in summary pages"
+               placeholder="This appears in summary pages, not in the article itself"
                formControlName="description" />
       </div>
 
@@ -75,28 +85,27 @@
       <hr />
 
       <!-- banner image-->
-      <div class="mt-2 mb-2">
-        <label for="bannerImageSelector" class="fw-bold">Select a banner image</label>
-        <div class="justify-content-start">
-          <input type="file" id="bannerImageSelector" (change)="bannerImageSelect($event)" />
-          <button class="btn btn-secondary" (click)="uploadBannerImage()" [disabled]="!bannerImage">Upload image</button>
+      <div class="mt-2 mb-2 ">
+        <div class="mb-3">
+          <label for="bannerImageSelector" class="fw-bold">Select a banner image</label>
+          <div>
+            <input type="file" id="bannerImageSelector" (change)="bannerImageSelect($event)" />
+            <button class="btn btn-secondary" (click)="uploadBannerImage()" [disabled]="!bannerImage">Upload image</button>
+          </div>
+            
         </div>
-        <div class="justify-content-end">
-          <img class="w-25 text-end"
+        <div class="">
+          <img class="w-100 text-end"
                [src]="bannerImageUrl"
                *ngIf="bannerImageUrl"
                alt="article banner image" />
         </div>
       </div>
 
+
       <hr />
 
       <app-content-editor [contentControl]="$any(form.get('content'))"></app-content-editor>
-
-      <div class="mt-2">
-        <button type="submit" class="btn btn-sm btn-success me-2" [disabled]="!form.valid">{{ article.id ? 'Update' : 'Create' }}</button>
-        <button class="btn btn-sm btn-warning" (click)="cancel()">Cancel</button>
-      </div>
     </form>
   </section>
 
