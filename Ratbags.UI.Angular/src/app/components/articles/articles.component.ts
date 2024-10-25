@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { Observable, forkJoin, map, of, switchMap } from 'rxjs';
+import { Observable, catchError, forkJoin, map, of, switchMap } from 'rxjs';
 
 import { Article } from '../../interfaces/article';
 import { ArticleListItem } from '../../interfaces/article-list-item';
@@ -58,8 +58,13 @@ export class ArticlesComponent implements OnInit {
                         //console.log(`returnUrl for article '${article.title}'`, imageSrc);
                         article.imgSrc = imageSrc;
                         return article;
+                      }),
+                      catchError(error => {
+                        console.error(`failed to load image for article '${article.title}':`, error);
+                        article.imgSrc = 'https://localhost:5001/api/images/ratbags.jpg'; // fallback to default image 
+                        return of(article); // return the article with the default image
                       })
-                    );
+                    )
                 }
 
                 return of({ ...article, imgSrc: 'https://localhost:5001/api/images/ratbags.jpg' });

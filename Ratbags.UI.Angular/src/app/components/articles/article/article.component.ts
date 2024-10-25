@@ -54,43 +54,31 @@ export class ArticleComponent implements OnInit, CanComponentDeactivate, OnDestr
     private toastrService: ToastrService,) {
   }
 
-  // we good to navigate away from the page?
-  canDeactivate(): boolean {
-    return !(this.showEditor && this.form.dirty);
-  }
-
-  // *** clean up editor mode and stop site blowing up when viewing other articles ***
-  //
-  // without this cleanup, if the user views other articles after editing AND abandoning that edit by navigating away,
-  // any subsequent article views will open in edit mode - which we don't want and we'll get errors.
-  //
-  // this is because we get into article edit mode on this component more from a menu item on the navbar -
-  // it fires editArticleSubject(true) in the articlesService, and is observed by editArticle$, also in that service.
-  //
-  // editArticle$ is observed by getArticleOrUseExisting method, also in that service.
-  // ...and breathe...
-  editFinished() {
-    if (this.showEditor) {
-      this.localSubscription.unsubscribe(); // do this before editFinished or ngOnInit will fire again
-      this.articlesService.editFinished();
-    }
-  }
-
   ngOnInit() {
     this.accountsService.validateToken(); // is user logged in - check once...
 
     // there's a lot going on here...
     //
     // 1  - grab the article id from route
+    //
     // 2a - get article from api if viewing / or return existing article if editing. returns article and editing flag to next switchMap
     // 2b - or setup a new article if creating. returns article and editing flag to next switchMap
-    // 3a - don't forget the banner image!
+    //
+    // 3a - check for banner image
     // 3b - grab the image from the api
     // 3c - map the image into our return. returns article, editing flag and image src (a blob url)
-    // 3d - don't have a banner image? that's cool, just pass along an empty string. returns article, edit flag and empty imageSrc
-    // 4a - set up article and showEditor flag
-    // 4b - set up edit form if needed
+    // 3d - side effect - set the bannerImageUrl from the get
+    // 3e - don't have a banner image? that's cool, just pass along an empty string. returns article, edit flag and empty imageSrc
     //
+    // 4 - check if save clicked
+    //
+    // 5a - handles save article
+    // 5b - update article
+    // 5c - create create
+    // 5d - not saving
+    //
+    // 6a - set up article and showEditor flag
+    // 6b - set up edit form if needed
     this.localSubscription = this.route.paramMap
       .pipe(
         switchMap(
@@ -112,9 +100,7 @@ export class ArticleComponent implements OnInit, CanComponentDeactivate, OnDestr
         ),
         switchMap(
           ({ article, edit }) => {
-            // check for banner image
-
-            // 3 - don't forget the banner image! 
+            // 3 - check for banner image
             if (article && article.bannerImageUrl) {
               // 3b - grab the image from the api
               return this.imagesService.get(article.bannerImageUrl)
@@ -131,55 +117,54 @@ export class ArticleComponent implements OnInit, CanComponentDeactivate, OnDestr
                 )
             }
             else {
-              // 3d - don't have a banner image? that's cool, just pass along an empty string. returns article, edit flag and empty image src
+              // 3e - don't have a banner image? that's cool, just pass along an empty string as part of the return
               return of({ article: article, edit: edit, imageSrc: '' });
             }
           }
         ),
         switchMap(
           ({ article, edit, imageSrc }) => {
-            // check if save clicked
+            // 4 - check if save clicked
             return this.articlesService.saveChanges$
               .pipe(
-                map(saving => ({ article: article, edit: edit, imageSrc: imageSrc, save: saving })
+                map(saving => ({ article: article, edit: edit, imageSrc: imageSrc, save: saving }) // return this
                 )
               )
 
             // no save
-            return of({ article: article, edit: edit, imageSrc: imageSrc, save: false });
+            return of({ article: article, edit: edit, imageSrc: imageSrc, save: false }); // return this
           }
         ),
         switchMap(
           ({ article: article, edit: edit, imageSrc: imageSrc, save: save }) => {
+            // 5a - handles save article
             if (save) {
-              // saving
               this.updateModelFromForm();
 
               if (article?.id) {
-                // update
+                // 5b - update article
                 return this.articlesService.update(article)
                   .pipe(
                     map(
-                      response => ({ article: article, edit: edit, imageSrc: imageSrc, save: true, create: false, id: article.id })
+                      response => ({ article: article, edit: edit, imageSrc: imageSrc, save: true, create: false, id: article.id }) // return this
                     )
                   )
               }
               else {
-                // create
+                // 5c - create article
                 return this.articlesService.create(<Article>this.article)
                   .pipe(
                     map(
                       response => {
-                        console.log('create response', response);
-                        return ({ article: article, edit: edit, imageSrc: imageSrc, save: true, create: true, id: response.body });
+                        return ({ article: article, edit: edit, imageSrc: imageSrc, save: true, create: true, id: response.body }); // return this inc. new id
                       }
                     )
                   )
               }
             }
 
-            // not saving
-            return of({ article: article, edit: edit, imageSrc: imageSrc, save: false, create: false, id: article.id });
+            // 5d - not saving
+            return of({ article: article, edit: edit, imageSrc: imageSrc, save: false, create: false, id: article.id }); // return this
           }
         )
       )
@@ -190,16 +175,17 @@ export class ArticleComponent implements OnInit, CanComponentDeactivate, OnDestr
               this.articlesService.saveChanges(false);
               this.articlesService.editFinished();
 
+              // if creating , redirect to the article by id
               if (create) {
                 this.router.navigate(['/articles', id]);
               }
             }
 
-            // 4a - set up article and showEditor flag
+            // 6a - set up article and showEditor flag
             this.article = article;
             this.showEditor = edit;
 
-            // 4b - set up edit form if needed
+            // 6b - set up edit form if needed
             if (this.showEditor) {
               this.setupForm();
             }
@@ -210,10 +196,32 @@ export class ArticleComponent implements OnInit, CanComponentDeactivate, OnDestr
   ngOnDestroy() {
     if (this.localSubscription) {
       this.localSubscription.unsubscribe();
-      console.log('ArticleComponent - ngOnDestroy unsub local');
     }
 
     this.commentsService.showCommentsOffCanvas(false);
+  }
+
+  // we good to navigate away from the page?
+  canDeactivate(): boolean {
+    return !(this.showEditor && this.form.dirty);
+  }
+
+  // *** clean up editor mode and stop site blowing up when viewing other articles ***
+  //
+  // without this cleanup, if the user views other articles after editing AND abandoning that edit by navigating away,
+  // any subsequent article views will open in edit mode - which we don't want and we'll get errors.
+  //
+  // this is because we get into article edit mode on this component more from a menu item on the navbar -
+  // it fires editArticleSubject(true) in the articlesService, and is observed by editArticle$, also in that service.
+  //
+  // editArticle$ is observed by getArticleOrUseExisting method, also in that service.
+  // ...and breathe...
+  editFinished() {
+    this.localSubscription.unsubscribe(); // do this before editFinished or ngOnInit will fire again
+
+    if (this.showEditor) {
+      this.articlesService.editFinished();
+    }
   }
 
   setupForm() {
@@ -223,40 +231,6 @@ export class ArticleComponent implements OnInit, CanComponentDeactivate, OnDestr
       description: new FormControl(this.article.description, [Validators.required]),
       introduction: new FormControl(this.article.introduction)
     });
-  }
-
-  getArticle(id: string) {
-    this.articlesService.getArticle(id)
-      .subscribe({
-        next: (result: Article) => {
-          this.article = {
-            id: result.id,
-            title: result.title,
-            description: result.description,
-            introduction: result.introduction,
-            content: result.content,
-            bannerImageUrl: result.bannerImageUrl,
-            created: result.created,
-            updated: result.updated,
-            publishDate: result.publishDate,
-            comments: result.comments,
-            userId: result.userId,
-            authorName: result.authorName,
-            views: result.views
-          }
-        }
-      });
-  }
-
-  getBannerImageUrl() {
-    if (this.article && this.article.bannerImageUrl) {
-      this.imagesService.get(this.article.bannerImageUrl)
-        .subscribe({
-          next: (src: string) => {
-            this.bannerImageUrl = src;
-          }
-        });
-    }
   }
 
   showComments() {
