@@ -36,12 +36,7 @@ export class ExternalSigninCallbackComponent implements OnInit, OnDestroy {
           this.externalSigninService.getToken(providerName)
             .subscribe({
               next: (token: any) => {
-                this.accountsService.storeToken(token);
-
-                var email = token['email'];
-
-                this.accountsService.validateToken();
-
+                
                 switch (providerName) {
                   case ExternalAuthenticationProvidersEnum[ExternalAuthenticationProvidersEnum.Facebook].toLowerCase():
                     providerName = 'Facebook';
@@ -54,9 +49,7 @@ export class ExternalSigninCallbackComponent implements OnInit, OnDestroy {
                     break;
                 }
 
-                if (email) {
-                  this.toastrService.success(`Signed in as ${email} via ${providerName}`);
-                }
+                this.toastrService.success(`Signed in via ${providerName}`);
 
                 this.router.navigate(['/']);
               }

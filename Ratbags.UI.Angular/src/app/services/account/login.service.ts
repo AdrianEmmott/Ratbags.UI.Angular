@@ -19,25 +19,24 @@ export class LoginService {
     private accountsService: AccountsService) { }
 
   login(email: string, password: string): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}`, { email, password })
+    return this.http.post<any>(
+      `${this.apiUrl}`, { email, password }, { withCredentials: true })
       .pipe(
         map(
           (response) => {
-            if (response && response.token) {
-              this.accountsService.storeToken(response);
-
-              this.accountsService.decodeToken();
-
-              this.accountsService.validateToken();
+            if (response) {
+              console.log('login response', response);
+              this.accountsService.storeToken(response.jwt);
             }
 
             return response;
-          })
+          }
+        )
       );
   }
 
   logout() {
     this.accountsService.removeToken();
-    this.accountsService.validateToken();
+    this.accountsService.validateToken().subscribe();;
   }
 }

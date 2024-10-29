@@ -1,12 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { JwtPayload, jwtDecode } from 'jwt-decode';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 
 import { AppConfigService } from '../app-config.service';
-import { Router } from '@angular/router';
-import { TokenWrapper } from '../../interfaces/token-wrapper';
 
 @Injectable({
   providedIn: 'root'
@@ -18,12 +17,17 @@ export class AccountsService {
   private tokenValidSubject = new BehaviorSubject<boolean>(false);
   validateToken$ = this.tokenValidSubject.asObservable();
 
-  constructor(private http: HttpClient,
+  constructor(
+    private http: HttpClient,
     private router: Router,
     private appConfigService: AppConfigService) { }
 
   decodeToken(): JwtPayload | null {
-    const token = localStorage.getItem('jwtToken');
+    //console.log('decodeToken start');
+
+    const token = localStorage.getItem('jwt');
+
+    console.log('AccountsService decodeToken jwt', token);
 
     if (!token) {
       return null;
@@ -31,57 +35,63 @@ export class AccountsService {
 
     const decodedToken: any = jwtDecode(token);
     //console.log('decodeToken decodedToken', decodedToken);
+
     const currentTime = Math.floor(new Date().getTime() / 1000);
 
     // expired?
     const validToken = decodedToken.exp > currentTime;
 
-    if (!validToken) {
-      this.removeToken();
-      return null;
-    }
+    //console.log('AccountsService current time', currentTime);
+    //console.log('AccountsService token expiry', decodedToken.exp);
 
     return decodedToken;
   }
 
   get userId(): string | undefined {
-    const token = this.decodeToken();
-    if (token) {
-      const id = token.sub;
+    const userId = localStorage.getItem('user-id');
 
-      return id;
+    if (userId) {
+      return userId;
     }
 
     return undefined;
   }
 
-  // validate token on server
-  validateToken(): void {
-    this.http.get<any>(`${this.apiUrl}/validate-token`)
+  validateToken(): Observable<boolean> {
+    const token = localStorage['jwt'];
+
+    //console.log('AccountsService validating token', token);
+
+    return this.http.get<any>(`${this.apiUrl}/validate-token`)
       .pipe(
-        map(() => true),// token will always be valid if there is a valid response
-        catchError(() => of(false)), // unauthorised, token invalid or expired
+        map(result => result),// token will always be valid if there is a valid response
+        catchError(() => of(false)),// unauthorised, token invalid or expired
         tap(status => {
+          console.log('AccountsService validateToken status in tap', status);
           // grabbing the status from map
           this.tokenValidSubject.next(status);
         })
-      )
-      .subscribe();
+      );
   }
 
-  getUserDetails(): string | null {
-    let email = localStorage.getItem('email');
+  storeToken(token: any) {
+    //console.log('AccountsService storeToken', token);
 
-    return email;
+    localStorage.setItem('jwt', token);
   }
 
-  storeToken(token: TokenWrapper) {
-    localStorage.setItem('jwtToken', token.token);
-    localStorage.setItem('email', token.email);
+  storeUserId(token: any) {
+    const decoded = this.decodeToken();
+
+    if (decoded) {
+      var userId = decoded?.sub;
+      if (userId) {
+        localStorage.setItem('user-id', userId);
+      }
+    }
   }
 
   removeToken() {
-    localStorage.removeItem('jwtToken');
-    localStorage.removeItem('email');
+    localStorage.removeItem('jwt');
   }
 }

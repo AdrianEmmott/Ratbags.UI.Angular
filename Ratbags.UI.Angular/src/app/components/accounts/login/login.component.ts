@@ -45,9 +45,7 @@ export class LoginComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
     });
-  }
-
-  
+  }  
 
   ngOnInit() {
     this.route.queryParams
@@ -81,6 +79,8 @@ export class LoginComponent implements OnInit {
         error: error => {
           this.loginAttempts++;
           console.log('this.loginAttempts', this.loginAttempts);
+
+          console.log('login error', error);
 
           if (this.loginAttempts === 5) {
             this.router.navigate(['/login-trouble']);

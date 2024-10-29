@@ -6,14 +6,6 @@ import { AccountsService } from '../../services/account/accounts.service';
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
-export class HomeComponent implements OnInit {
-  isLoggedIn$ = this.accountsService.validateToken$;
-
-  constructor(
-    private accountsService: AccountsService) { }
-
-
-  ngOnInit() {
-    this.accountsService.validateToken(); // is user logged in - check once...
-  }    
+export class HomeComponent {
+  constructor() { }  
 }

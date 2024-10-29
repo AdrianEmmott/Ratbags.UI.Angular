@@ -2,7 +2,7 @@ import { HttpHandlerFn, HttpInterceptorFn, HttpRequest } from '@angular/common/h
 import { Observable } from 'rxjs';
 
 export const jwtInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: HttpHandlerFn): Observable<any> => {
-  const token = localStorage.getItem('jwtToken');
+  const token = localStorage.getItem('jwt');
 
   if (token) {
     req = req.clone({

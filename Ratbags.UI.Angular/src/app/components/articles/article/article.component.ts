@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { Observable, Subscription, from, map, of, switchMap, tap } from 'rxjs';
+import { Observable, Subscription, catchError, from, map, of, switchMap, tap } from 'rxjs';
 
 import { Article } from '../../../interfaces/article';
 import { CanComponentDeactivate } from '../../../interfaces/can-component-deactivate';
@@ -24,7 +24,6 @@ import { faCoffee } from '@fortawesome/free-solid-svg-icons';
 })
 export class ArticleComponent implements OnInit, CanComponentDeactivate, OnDestroy {
   isLoggedIn$ = this.accountsService.validateToken$;
-  localSaveChangesSubscription!: Subscription;
 
   localSubscription!: Subscription;
 
@@ -55,115 +54,107 @@ export class ArticleComponent implements OnInit, CanComponentDeactivate, OnDestr
   }
 
   ngOnInit() {
-    this.accountsService.validateToken(); // is user logged in - check once...
-
     // there's a lot going on here...
     //
-    // 1  - grab the article id from route
-    //
-    // 2a - get article from api if viewing / or return existing article if editing. returns article and editing flag to next switchMap
-    // 2b - or setup a new article if creating. returns article and editing flag to next switchMap
-    //
-    // 3a - check for banner image
-    // 3b - grab the image from the api
-    // 3c - map the image into our return. returns article, editing flag and image src (a blob url)
-    // 3d - side effect - set the bannerImageUrl from the get
-    // 3e - don't have a banner image? that's cool, just pass along an empty string. returns article, edit flag and empty imageSrc
-    //
-    // 4 - check if save clicked
-    //
-    // 5a - handles save article
-    // 5b - update article
-    // 5c - create create
-    // 5d - not saving
-    //
-    // 6a - set up article and showEditor flag
-    // 6b - set up edit form if needed
+    // 1 - switchmap - check for route params and get / create article
+    // 2 - switchmap - check for banner image
+    // 3 - switchmap - check if save clicked
+    // 4 - switchmap - handles save article
+    // 5 - switchmap - subscribe
     this.localSubscription = this.route.paramMap
       .pipe(
         switchMap(
           params => {
-            // check for params and get / create article
+            // 1 - check for route params and get / create article
 
-            // 1 - grab the article id from route
+            // 1a - grab the article id from route
             const id = params.get('id');
 
             if (id) {
-              // 2a - get article from api if viewing / or return existing article if editing. returns article and editing flag to next switchMap
+              // 1b - get article from api if viewing / or return existing article if editing. returns article and editing flag to next switchMap
               return this.articlesService.getArticleOrUseExisting(id, this.article);
             }
             else {
-              // 2b - or setup a new article if creating. returns article and editing flag to next switchMap
+              // 1c - or setup a new article if creating. returns article and editing flag to next switchMap
               return of({ article: this.setupCreate(), edit: true });
             }
           }
         ),
         switchMap(
           ({ article, edit }) => {
-            // 3 - check for banner image
+            // 2 - switchmap - check for banner image
             if (article && article.bannerImageUrl) {
-              // 3b - grab the image from the api
+              // 2a - grab the image from the api
               return this.imagesService.get(article.bannerImageUrl)
                 .pipe(
                   map(
-                    // 3c - map the image into our return. returns article, editing flag and image src (a blob url)
+                    // 2c - map the image into our return. returns article, editing flag and image src (a blob url)
                     (imageSrc) =>
                       ({ article: article, edit: edit, imageSrc: imageSrc })
                   ),
                   tap(result => {
-                    // 3d - side effect - set the bannerImageUrl from the get
+                    // 2d - side effect - set the bannerImageUrl from the get
                     this.bannerImageUrl = result.imageSrc;
+                  }),
+                  catchError(error => {
+                    console.error(`failed to load image for article '${article.title}':`, error);
+                    return of ({ article: article, edit: edit, imageSrc: '' }); // return the article with no image
                   })
-                )
+              )
             }
             else {
-              // 3e - don't have a banner image? that's cool, just pass along an empty string as part of the return
+              // 2e - don't have a banner image? that's cool, just pass along an empty string as part of the return
               return of({ article: article, edit: edit, imageSrc: '' });
             }
           }
         ),
         switchMap(
           ({ article, edit, imageSrc }) => {
-            // 4 - check if save clicked
+            // 3 - check if save clicked
             return this.articlesService.saveChanges$
               .pipe(
-                map(saving => ({ article: article, edit: edit, imageSrc: imageSrc, save: saving }) // return this
+              // 3a - we're saving - return this to next switchMap
+                map(saving => ({ article: article, edit: edit, imageSrc: imageSrc, save: saving })
                 )
               )
 
-            // no save
-            return of({ article: article, edit: edit, imageSrc: imageSrc, save: false }); // return this
+            // 3b - no save - return this to next switchMap
+            return of({ article: article, edit: edit, imageSrc: imageSrc, save: false });
           }
         ),
         switchMap(
           ({ article: article, edit: edit, imageSrc: imageSrc, save: save }) => {
-            // 5a - handles save article
+            // 4 - handles save article
             if (save) {
               this.updateModelFromForm();
 
+              if (this.accountsService.userId) {
+                article.authorUserId = this.accountsService.userId;
+              }
+
               if (article?.id) {
-                // 5b - update article
+                // 4a - update article - return this to next switchMap
                 return this.articlesService.update(article)
                   .pipe(
                     map(
-                      response => ({ article: article, edit: edit, imageSrc: imageSrc, save: true, create: false, id: article.id }) // return this
+                      response => ({ article: article, edit: edit, imageSrc: imageSrc, save: true, create: false, id: article.id })
                     )
                   )
               }
               else {
-                // 5c - create article
+                // 4b - create article - return this to next switchMap
                 return this.articlesService.create(<Article>this.article)
                   .pipe(
                     map(
                       response => {
-                        return ({ article: article, edit: edit, imageSrc: imageSrc, save: true, create: true, id: response.body }); // return this inc. new id
+                        return ({ article: article, edit: edit, imageSrc: imageSrc, save: true, create: true, id: response.body });
                       }
                     )
                   )
               }
             }
 
-            // 5d - not saving
+            // 4c - not saving
             return of({ article: article, edit: edit, imageSrc: imageSrc, save: false, create: false, id: article.id }); // return this
           }
         )
@@ -175,9 +166,13 @@ export class ArticleComponent implements OnInit, CanComponentDeactivate, OnDestr
               this.articlesService.saveChanges(false);
               this.articlesService.editFinished();
 
-              // if creating , redirect to the article by id
+              // if creating, redirect to the article by id
               if (create) {
                 this.router.navigate(['/articles', id]);
+                this.toastrService.success('Article created');
+              }
+              else {
+                this.toastrService.success('Article updated');
               }
             }
 
@@ -189,6 +184,8 @@ export class ArticleComponent implements OnInit, CanComponentDeactivate, OnDestr
             if (this.showEditor) {
               this.setupForm();
             }
+
+            this.accountsService.decodeToken();
           }
       });
   }
@@ -249,7 +246,6 @@ export class ArticleComponent implements OnInit, CanComponentDeactivate, OnDestr
       updated: new Date(),
       publishDate: new Date(),
       comments: [],
-      userId: ''
     }
 
     this.setupForm();
@@ -264,30 +260,40 @@ export class ArticleComponent implements OnInit, CanComponentDeactivate, OnDestr
       this.article.introduction = this.form?.controls['introduction'].value;
       this.article.content = this.form?.controls['content'].value;
 
-      if (this.bannerImage) {
-        this.article.bannerImageUrl = this.bannerImage.name;
-      }
+      
     }
   }
 
   bannerImageSelect(event: any) {
-    console.log('selected image', event.target.files[0]);
-
     this.bannerImage = event.target.files[0];
-
-    console.log('this.bannerImage', this.bannerImage);
   }
 
   uploadBannerImage() {
-    this.article.bannerImageUrl = this.bannerImage?.name;
-
     this.imagesService.create(this.bannerImage!)
+      .pipe(
+        switchMap(
+          () => {
+            const filename = this.bannerImage!.name;
+            return this.imagesService.get(filename)
+              .pipe(
+                map(
+                  result => {
+                    return ({ filename: filename, imageUrl: result });
+                  }
+                )
+              )
+          }
+        )
+      )
       .subscribe({
-        next: response => {
-          console.log('image created response', response);
-          this.bannerImage = null;
-          this.toastrService.success(`Uploaded image ${this.article.bannerImageUrl}`);
-        }
+        next:
+          ({ filename, imageUrl }) => {
+            this.article.bannerImageUrl = filename;
+            this.bannerImage = null;
+            this.bannerImageUrl = imageUrl;
+            this.toastrService.success(`Uploaded image ${filename}`);
+            this.form.markAsDirty();
+          }
       });
   }
 }

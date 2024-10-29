@@ -1,19 +1,17 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { jwtDecode } from 'jwt-decode';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
+import { map, switchMap, tap } from 'rxjs/operators';
 
 import { AppConfigService } from '../app-config.service';
-import { Router } from '@angular/router';
 import { AccountsService } from './accounts.service';
-import { TokenWrapper } from '../../interfaces/token-wrapper';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ExternalSigninService {
-  private apiUrl = `${this.appConfigService.apiBaseUrl}/api/accounts/external-authentication`;
+  private apiUrl = `${this.appConfigService.apiBaseUrl}`;
 
   constructor(private http: HttpClient,
     private router: Router,
@@ -21,18 +19,26 @@ export class ExternalSigninService {
     private accountsService: AccountsService) { }
 
   signin(providerName: string) {
-    window.location.href = `${this.apiUrl}/sign-in/${providerName.toLowerCase()}`;
+    window.location.href = `${this.apiUrl}/api/accounts/external-authentication/sign-in/${providerName.toLowerCase()}`;
   }
 
   getToken(providerName: string): Observable<any> {
-    return this.http.get<{ token: any }>(`${this.apiUrl}/token/${providerName}`, { withCredentials: true })
+    return this.http.get<any>(`${this.apiUrl}/api/accounts/external-authentication/token/${providerName}`, { withCredentials: true })
       .pipe(
-        map(
-          response => response as TokenWrapper
-        ),
-        tap((response: TokenWrapper) => {
-          this.accountsService.storeToken(response);
-        })
+        tap((response) => {
+          console.log('external signing response', response);
+          this.accountsService.storeToken(response.jwt);
+        }),
+        // validateToken is actually a side effect
+        // but we still want to return the original response from the http.get
+        // (and not the return from validateToken)
+        switchMap(response => this.accountsService.validateToken()
+          .pipe(
+            map(
+              () => response
+            )
+          )
+        )
       );
   }
 }

@@ -11,7 +11,7 @@ export interface Article {
   updated: Date;
   publishDate: Date;
   comments: Comment[];
-  userId: string;
+  authorUserId?: string;
   authorName?: string;
   views?: number;
 }

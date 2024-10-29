@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpBackend, HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 import { ConfigJSON } from '../interfaces/config.json';
@@ -11,7 +11,12 @@ export class AppConfigService {
   private appConfig!: ConfigJSON;
   errorMessage: string = 'App config file not loaded!';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, handler: HttpBackend) {
+    // super useful - allows httpClient to be called without firing interceptors, which breaks this service with the refreshTokenInterceptor
+    // https://stackoverflow.com/a/49013534/193862
+    // even the angular guys like it https://github.com/angular/angular/issues/20203#issuecomment-368680437
+    this.http = new HttpClient(handler);
+}
 
   // wrap this up in a promise for APP_INITIALIZER in app.module
   loadAppConfig(): Promise<void> {
@@ -32,7 +37,6 @@ export class AppConfigService {
   }
 
   get apiBaseUrl() {
-
     if (!this.appConfig) {
       throw Error(this.errorMessage);
     }

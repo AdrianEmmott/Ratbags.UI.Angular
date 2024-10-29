@@ -1,12 +1,11 @@
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, map, of, switchMap, tap } from 'rxjs';
-
-import { AppConfigService } from './app-config.service';
+import { BehaviorSubject, Observable, map, of, switchMap } from 'rxjs';
 
 import { Article } from '../interfaces/article';
 import { ArticleListItem } from '../interfaces/article-list-item';
 import { PagedResult } from '../interfaces/paged-result';
+import { AppConfigService } from './app-config.service';
 
 @Injectable({
   providedIn: 'root'
@@ -68,7 +67,6 @@ export class ArticlesService {
   }
 
   update(article: Article): Observable<any> {
-    console.log('ArticlesService update article');
     return this.http.put(`${this.apiUrl}`, article);
   }
 
@@ -80,7 +78,6 @@ export class ArticlesService {
   }
 
   saveChanges(save: boolean) {
-    console.log('ArticlesService saveChanges');
     this.saveChangesSubject.next(save);
   }
 }

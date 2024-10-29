@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideHttpClient, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
@@ -11,6 +11,7 @@ import { ToastrModule } from 'ngx-toastr';
 
 // interceptors
 import { jwtInterceptor } from './interceptors/jwt.interceptor';
+import { RefreshTokenInterceptor } from './interceptors/refresh-token.interceptor';
 
 // editor and icons
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -43,6 +44,7 @@ import { SearchComponent } from './components/search/search.component';
 import { UnsavedChangesPromptComponent } from './components/unsaved-changes-prompt/unsaved-changes-prompt.component';
 import { ImageUploadComponent } from './components/upload/image-upload/image-upload.component';
 import { AppConfigService } from './services/app-config.service';
+
 
 @NgModule({
   declarations: [
@@ -91,18 +93,18 @@ import { AppConfigService } from './services/app-config.service';
   ],
   providers: [
     provideHttpClient(
-      withInterceptors([jwtInterceptor])
+      withInterceptors([jwtInterceptor, RefreshTokenInterceptor]),
     ),
     {
       provide: APP_INITIALIZER,
-      multi: true,
-      deps: [AppConfigService],
       useFactory: (appConfigService: AppConfigService) => {
         return () => {
           // return a promise for stability! (more stable than observable apparently...)
           return appConfigService.loadAppConfig();
         };
-      }
+      },
+      multi: true,
+      deps: [AppConfigService],
     }
   ],
   bootstrap: [AppComponent]

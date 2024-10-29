@@ -2,62 +2,60 @@ import { CanDeactivate } from '@angular/router';
 import { Injectable } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CanComponentDeactivate } from '../interfaces/can-component-deactivate';
-import { UnsavedChangesPromptComponent } from '../components/unsaved-changes-prompt/unsaved-changes-prompt.component'; 
-import { Observable, from } from 'rxjs';
+import { UnsavedChangesPromptComponent } from '../components/unsaved-changes-prompt/unsaved-changes-prompt.component';
+import { Observable, of, from } from 'rxjs';
+import { map, mergeMap, catchError } from 'rxjs/operators';
+import { AccountsService } from '../services/account/accounts.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
-
-// used by the router to allow / halt navigation away from a component.
-//
-// guard must implement angular CanDeactivate interface.
-//
-// the CanComponentDeactivate - even though it's really only for the component,
-// we must expost it here so the guard can see the component's canDeactivate and editFinished methods.
 export class CanDeactivateGuard implements CanDeactivate<CanComponentDeactivate> {
-  constructor(private modalService: NgbModal) { }
+  isLoggedIn$ = this.accountsService.validateToken$;
 
-  canDeactivate(component: CanComponentDeactivate): Promise<boolean> | boolean | Observable<boolean> {
-    console.log('CanDeactivateGuard - checking if component can deactivate');
+  constructor(
+    private modalService: NgbModal,
+    private accountsService: AccountsService
+  ) { }
 
-    if (component.canDeactivate && !component.canDeactivate()) {
+  canDeactivate(component: CanComponentDeactivate): Observable<boolean> {
+    return this.isLoggedIn$
+      .pipe(
+        mergeMap(
+          (loggedInResult: boolean) => {
+            if (loggedInResult) {
+              if (component.canDeactivate && !component.canDeactivate()) {
 
-      // open ngb modal if !canDeactivate (usually form.dirty and editor mode)
-      const modalResultPromise = this.modalService
-        .open(UnsavedChangesPromptComponent)
-        .result
-        .then(
-          (result) => {
-            console.log('CanDeactivateGuard - are we getting in here?');
+                // open modal and return the result as an observable
+                const modalResult$ = from(this.modalService.open(UnsavedChangesPromptComponent).result)
+                  .pipe(
+                    map(
+                      (result: boolean) => {
+                        if (result && component.editFinished) {
+                          component.editFinished();
+                        }
+                        return result;
+                      }),
 
-            ;            // if result, checks if editFinished method exists on the component and calls the method if it does
-            if (result && component.editFinished) {
-              component.editFinished();
+                    catchError(
+                      // when user clicks away / hits escape, bypassing confirmation
+                      () => of(false)
+                    )
+                  );
+
+                return modalResult$;
+              }
             }
 
-            // this gets returned to the route and allows the router to navigate away from the component - or stay put if the user chooses "stay"
-            return result;
-          }
-        )
-        .catch(
-          () => false
-        );
-
-      // angular didn't like returning a promise (and it was causing ngOnInit to fire twice)
-      // so return it as a wrapped observable
-      return from(modalResultPromise);
-    }
-
-    // if we get here: there were no unsaved changes and the modal didn't open
-    // check if the component has editFinished() and if it does
-    // call it in the component
-    console.log('CanDeactivateGuard - no unsaved changes - navigating away');
-    if (component.editFinished) {
-      component.editFinished();
-    }
-
-    // this gets returned to the route and allows the router to navigate away from the component
-    return true;
+            // if the user is not logged in
+            return of(true); 
+          }),
+        catchError((error: HttpErrorResponse) => {
+          console.error(error);
+          // deactivate if error
+          return of(true); 
+        })
+      );
   }
 }

@@ -15,19 +15,19 @@ import { AboutComponent } from './components/about/about.component';
 import { CanDeactivateGuard } from './guards/can-deactivate.guard';
 
 const routes: Routes = [
-  
+  { path: 'home', component: HomeComponent },
   { path: 'register', component: RegisterComponent },
 
   { path: 'register-confirm-email', component: RegisterConfirmEmailComponent },
   { path: 'register-confirm-email/:user-id/:token', component: RegisterConfirmEmailComponent },
-  
+
   { path: 'resend-register-confirm-email', component: ResendRegisterConfirmEmailComponent },
 
-  { path: 'login', component: LoginWrapperComponent }, 
+  { path: 'login', component: LoginWrapperComponent },
   { path: 'forgot-password', component: ResetPasswordComponent },
   { path: 'reset-password/:user-id/:token', component: ResetPasswordUpdateComponent },
   { path: 'login-trouble', component: LoginTroubleComponent },
-  
+
   { path: 'external-sign-in-callback/:providerName', component: ExternalSigninCallbackComponent },
 
   { path: 'about', component: AboutComponent },
@@ -35,14 +35,11 @@ const routes: Routes = [
   { path: 'articles', component: ArticlesComponent },
   { path: 'articles/new', component: ArticleComponent, canDeactivate: [CanDeactivateGuard] },
   { path: 'articles/:id', component: ArticleComponent, canDeactivate: [CanDeactivateGuard] },
-  //{ path: 'articles/new', component: ArticleComponent },
-  //{ path: 'articles/:id', component: ArticleComponent }
-
-
+  
   //{ path: '**', component: PageNotFoundComponent }
   { path: '', component: HomeComponent }, // Default route
   //{ path: '**', redirectTo: 'home' }, // this breaks routing
-  { path: 'home', component: HomeComponent },
+
 ];
 
 @NgModule({

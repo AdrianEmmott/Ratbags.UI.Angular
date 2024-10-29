@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { Observable, catchError, forkJoin, map, of, switchMap } from 'rxjs';
 
-import { Article } from '../../interfaces/article';
 import { ArticleListItem } from '../../interfaces/article-list-item';
 import { PagedResult } from '../../interfaces/paged-result';
 import { ArticlesService } from '../../services/articles.service';
@@ -9,7 +9,7 @@ import { ImagesService } from '../../services/images.service';
 
 // icons
 import { faComments } from '@fortawesome/free-regular-svg-icons';
-import { DomSanitizer } from '@angular/platform-browser';
+import { AccountsService } from '../../services/account/accounts.service';
 
 
 @Component({
@@ -30,12 +30,16 @@ export class ArticlesComponent implements OnInit {
     public articlesService: ArticlesService,
     public imagesService: ImagesService,
     private cd: ChangeDetectorRef,
-    private sanitizer: DomSanitizer,) { }
+    private sanitizer: DomSanitizer,
+    private accountsService: AccountsService) { }
 
   ngOnInit() {
     this.loadArticles();
     this.initialised = true;
-  }
+
+    const id = this.accountsService.userId;
+    console.log('id', id);
+   }
 
  
   loadArticles() {

@@ -12,8 +12,6 @@ import { ArticlesService } from '../../../services/articles.service';
 import { faSun, faFloppyDisk, faPenToSquare, faFile } from '@fortawesome/free-regular-svg-icons';
 import { faMoon, faCancel, faPlus } from '@fortawesome/free-solid-svg-icons';
 
-
-
 @Component({
   selector: 'app-nav-bar',
   templateUrl: './nav-bar.component.html',
